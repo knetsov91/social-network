@@ -13,5 +13,17 @@ services:
       - VAULT_API_ADDR=http://127.0.0.1:8200
     cap_add:
       - IPC_LOCK
+
+  posts-service-db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: posts_social_network
+    volumes:
+      - social_network_db_data:/var/lib/postgresql/data
+      - ./sql/create_database.sql:/docker-entrypoint-initdb.d/create_database.sql
 volumes:
   vault_data:
+  social_network_db_data:
