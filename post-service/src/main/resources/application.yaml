@@ -17,6 +17,17 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+
+  cloud:
+    vault:
+      uri: http://127.0.0.1:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        default-context: secret
+      fail-fast: true
+
 server:
   port: 0
 
@@ -27,3 +38,6 @@ eureka:
     instance:
       preferIpAddress: true
 
+logging:
+  level:
+    org.springframework.cloud.vault: info
