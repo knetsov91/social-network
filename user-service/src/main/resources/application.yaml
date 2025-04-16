@@ -1,6 +1,6 @@
-application:
-  name: user-service
 spring:
+  application:
+    name: user-service
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/${DB}
@@ -16,3 +16,13 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+
+server:
+  port: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+      preferIpAddress: true
