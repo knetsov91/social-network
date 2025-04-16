@@ -23,3 +23,11 @@ logging:
       springframework:
         cloud:
           loadbalancer: error
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+    health:
+      show-details: always
