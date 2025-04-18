@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ChatRepository extends MongoRepository<Chat, UUID> {
+public interface ChatRepository extends MongoRepository<Chat, String> {
 
     Optional<List<Chat>> findByParticipantsContains(UUID participant);
 }
