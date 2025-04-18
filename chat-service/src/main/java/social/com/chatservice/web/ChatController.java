@@ -3,9 +3,12 @@ package social.com.chatservice.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
 import social.com.chatservice.chat.service.ChatService;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/chats")
@@ -17,6 +20,12 @@ public class ChatController {
     public ChatController(ChatRepository chatRepository, ChatService chatService) {
         this.chatRepository = chatRepository;
         this.chatService = chatService;
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserChats(@PathVariable UUID userId) {
+        List<Chat> chats = chatService.getUserChats(userId);
+        return ResponseEntity.ok(chats);
     }
 
     @PostMapping("/create")
