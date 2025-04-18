@@ -36,7 +36,19 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - social_network_users_db_data:/var/lib/mysql
+
+  chat-service-mongo-db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - social_network_posts_db_data:/data/db
+
 volumes:
   vault_data:
   social_network_db_data:
-  social_network_users_db_data:    
+  social_network_users_db_data:
+  social_network_posts_db_data:
