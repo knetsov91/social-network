@@ -2,7 +2,9 @@ package social.com.chatservice.chat.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import social.com.chatservice.message.model.Message;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -20,4 +22,6 @@ public class Chat {
 
     private LocalDateTime updatedAt;
 
+    @DBRef
+    private List<Message> messages;
 }
