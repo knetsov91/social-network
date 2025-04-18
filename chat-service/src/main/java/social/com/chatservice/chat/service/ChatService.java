@@ -30,4 +30,9 @@ public class ChatService {
 
          chatRepository.save(chat);
     }
+
+    public Chat getChatById(String chatId) {
+        return chatRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("Chat with id " + chatId + " not found"));
+    }
 }
