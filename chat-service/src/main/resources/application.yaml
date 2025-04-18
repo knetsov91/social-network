@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: chat-service
+  data:
+    mongodb:
+      host: ${MONGODB_HOST}
+      database: chats
+      port: 27017
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+      authentication-database: ${MONGO_AUTH}
+
+server:
+  port: 8089
+
+frontendUrl: http://localhost:5174/
