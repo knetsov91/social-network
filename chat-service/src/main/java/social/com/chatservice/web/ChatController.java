@@ -22,7 +22,7 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<?> getUserChats(@PathVariable UUID userId) {
         List<Chat> chats = chatService.getUserChats(userId);
         return ResponseEntity.ok(chats);
