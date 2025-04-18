@@ -22,6 +22,13 @@ public class ChatController {
         this.chatService = chatService;
     }
 
+    @GetMapping("/{chatId}")
+    public ResponseEntity<Chat> getChat(@PathVariable String chatId) {
+        Chat chat = chatService.getChatById(chatId);
+
+        return ResponseEntity.ok(chat);
+    }
+
     @GetMapping("/users/{userId}")
     public ResponseEntity<?> getUserChats(@PathVariable UUID userId) {
         List<Chat> chats = chatService.getUserChats(userId);
