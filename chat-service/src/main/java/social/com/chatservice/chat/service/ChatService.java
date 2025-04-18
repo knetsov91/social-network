@@ -3,6 +3,7 @@ package social.com.chatservice.chat.service;
 import org.springframework.stereotype.Service;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
+import social.com.chatservice.message.model.Message;
 import social.com.chatservice.web.dto.CreateChatRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,5 +35,12 @@ public class ChatService {
     public Chat getChatById(String chatId) {
         return chatRepository.findById(chatId)
                 .orElseThrow(() -> new RuntimeException("Chat with id " + chatId + " not found"));
+    }
+
+    public void addMessageToChat(String chatId, Message message) {
+        Chat chat = getChatById(chatId);
+        chat.getMessages().add(message);
+
+        chatRepository.save(chat);
     }
 }
