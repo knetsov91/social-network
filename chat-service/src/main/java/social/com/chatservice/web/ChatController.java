@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
 import social.com.chatservice.chat.service.ChatService;
+import social.com.chatservice.web.dto.ChatResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
 import java.util.List;
 import java.util.UUID;
@@ -23,10 +24,11 @@ public class ChatController {
     }
 
     @GetMapping("/{chatId}")
-    public ResponseEntity<Chat> getChat(@PathVariable String chatId) {
+    public ResponseEntity<ChatResponse> getChat(@PathVariable String chatId) {
         Chat chat = chatService.getChatById(chatId);
+        ChatResponse chatResponse = Mapper.mapChatToChatResponse(chat);
 
-        return ResponseEntity.ok(chat);
+        return ResponseEntity.ok(chatResponse);
     }
 
     @GetMapping("/users/{userId}")
