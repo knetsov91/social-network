@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import social.com.chatservice.message.model.Message;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,5 +24,5 @@ public class Chat {
     private LocalDateTime updatedAt;
 
     @DBRef
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 }
