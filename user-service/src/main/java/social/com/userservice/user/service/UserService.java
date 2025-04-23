@@ -5,11 +5,10 @@ import org.springframework.stereotype.Service;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
-
 import java.time.LocalDateTime;
 
 @Service
-public class UserService {
+public class UserService{
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -30,7 +29,7 @@ public class UserService {
         user.setUsername(userRegisterRequest.getUsername());
         user.setCreatedAt(LocalDateTime.now());
         user.setPassword(encode);
-
+        user.setActive(true);
         return userRepository.save(user);
     }
 }
