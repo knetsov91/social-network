@@ -1,5 +1,6 @@
 package social.com.userservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,14 +14,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import social.com.userservice.user.repository.UserRepository;
+
+import java.util.List;
 
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
     private UserRepository userRepository;
-
+    @Value("${frontend.url}") String frontendUrl;
     public SecurityConfig(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -29,6 +33,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
 
        return http
+               .cors(c -> c.configurationSource(e -> corsConfiguration()))
             .authorizeHttpRequests(req ->
                 req.requestMatchers("/api/v1/users/register",
                                 "/api/v1/users/login",
@@ -64,5 +69,15 @@ public class SecurityConfig implements WebMvcConfigurer {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         daoAuthenticationProvider.setUserDetailsService(userDetailsService());
         return daoAuthenticationProvider;
+    }
+
+    @Bean
+    public CorsConfiguration corsConfiguration() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        return corsConfiguration;
     }
 }
