@@ -27,6 +27,5 @@ eureka:
     instance:
       preferIpAddress: true
 
-jwt:
-  expiration-time: ${JWT_EXP_TIME}
-  secret-key: ${JWT_SECKRET_KEY}
+auth:
+  url: http://localhost:8085/api/v1/tokens
