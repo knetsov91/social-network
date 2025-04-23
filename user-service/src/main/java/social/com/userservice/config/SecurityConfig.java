@@ -18,9 +18,9 @@ public class SecurityConfig implements WebMvcConfigurer {
 
        return http
             .authorizeHttpRequests(req ->
-                req.requestMatchers("/auth/register", "/auth/login")
+                req.requestMatchers("/api/v1/users/register", "/api/v1/users/login")
                         .permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
             ).csrf(c -> c.disable())
                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.NEVER))
            .build();
