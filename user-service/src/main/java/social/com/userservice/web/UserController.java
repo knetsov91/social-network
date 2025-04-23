@@ -6,8 +6,6 @@ import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
 import social.com.userservice.web.dto.UserRegisterRequest;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -19,7 +17,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserRegisterRequest> getUser(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public ResponseEntity<UserRegisterRequest> register(@RequestBody UserRegisterRequest userRegisterRequest) {
 
         User user = userService.register(userRegisterRequest);
 
