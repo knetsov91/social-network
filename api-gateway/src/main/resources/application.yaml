@@ -11,6 +11,10 @@ spring:
           uri: lb://post-service
           predicates:
             - Path=/api/*/posts/**
+        - id: user
+          uri: lb://user-service
+          predicates:
+            - Path=/api/*/users/**, /api/*/auth/**
 
 eureka:
   client:
@@ -23,3 +27,11 @@ logging:
       springframework:
         cloud:
           loadbalancer: error
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+    health:
+      show-details: always
