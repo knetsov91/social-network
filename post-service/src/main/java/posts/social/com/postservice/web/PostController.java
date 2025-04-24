@@ -43,4 +43,21 @@ public class PostController {
 
         return ResponseEntity.status(HttpStatus.OK).body(mapped);
     }
+
+    @PutMapping("/{postId}/likes")
+    public ResponseEntity like(@PathVariable("postId") UUID postId, @RequestHeader(name="Authorization") String authorization) {
+        if (!authorization.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        //TODO: query user service to check if authorId is valid
+        String token = authorization.split(" ")[1];
+        UUID userId = UUID.fromString(token);
+
+        boolean exists = postService.postLikeExists(postId, userId);
+        postService.togglePostLike(postId, userId);
+        if (exists) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
