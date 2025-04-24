@@ -41,4 +41,21 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("No post with id: " + postId));
         return post.getLikes().contains(userId);
     }
+
+    public void togglePostLike(UUID postId, UUID userId) {
+        Optional<Post> postOpt = postRepository.findById(postId);
+        if (postOpt.isEmpty()) {
+            throw new RuntimeException("Post with id: " + postId + " not found");
+        }
+
+        Post post = postOpt.get();
+        List<UUID> postLikes = post.getLikes();
+        if (postLikes.contains(userId)) {
+            postLikes.remove(userId);
+        } else {
+            postLikes.add(userId);
+        }
+
+        postRepository.save(post);
+    }
 }
