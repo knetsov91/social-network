@@ -18,3 +18,6 @@ main functionalities related to posts, users, authentication etc. are in separat
   <li>JUnit5</li>
   <li>HashiCorp Vault</li>
 </ul> 
+
+<p>For detailed information about database visit  
+<a href="./docs/database.md">here</a>.</p>
