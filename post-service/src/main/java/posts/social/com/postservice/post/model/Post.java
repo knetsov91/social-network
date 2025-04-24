@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,5 +37,8 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
-    private List<UUID> likes;
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name="posts_likes", joinColumns = @JoinColumn(name="post_id"))
+    @Column(name="user_id")
+    private List<UUID> likes = new ArrayList<>();
 }
