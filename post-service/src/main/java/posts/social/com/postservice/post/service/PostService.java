@@ -36,4 +36,9 @@ public class PostService {
 
         return posts.get();
     }
+
+    public boolean postLikeExists(UUID postId, UUID userId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("No post with id: " + postId));
+        return post.getLikes().contains(userId);
+    }
 }
