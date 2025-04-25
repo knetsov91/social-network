@@ -36,6 +36,11 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - social_network_users_db_data:/var/lib/mysql
+
+  kafka:
+    image: apache/kafka:4.0.0
+    ports:
+      - "9092:9092"  
 volumes:
   vault_data:
   social_network_db_data:
