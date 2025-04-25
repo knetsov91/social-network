@@ -26,3 +26,15 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     instance:
       preferIpAddress: true
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+auth:
+  url: http://localhost:8085/api/v1/tokens
+
+frontend:
+  url: http://localhost:5174
