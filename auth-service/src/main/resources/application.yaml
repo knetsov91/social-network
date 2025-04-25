@@ -14,3 +14,12 @@ eureka:
 jwt:
   expiration-time: ${JWT_EXP_TIME}
   secret-key: ${JWT_SECRET_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
