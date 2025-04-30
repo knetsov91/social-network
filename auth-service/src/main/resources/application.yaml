@@ -23,3 +23,9 @@ management:
   endpoint:
     health:
       show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /api/v1/tokens/swagger-ui
+  api-docs:
+    path: /api/v1/tokens/api-docs
