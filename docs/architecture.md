@@ -4,3 +4,5 @@
 There is API Gateway whic function as main entry point. There is service discovery mechanism 
 which Gateway uses in order to route request to the correct microservice.
 </p>
+
+<img src="../assets/arch-diagram.png">
