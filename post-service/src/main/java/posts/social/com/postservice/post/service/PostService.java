@@ -1,20 +1,26 @@
 package posts.social.com.postservice.post.service;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import posts.social.com.postservice.Like;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 import posts.social.com.postservice.post.repository.PostRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class PostService {
+    private static final String TOPIC_LIKES = "likes-topic";
 
     private PostRepository postRepository;
+    private KafkaTemplate<String, Like> kafkaTemplate;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, KafkaTemplate<String, Like> kafkaTemplate) {
         this.postRepository = postRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public void create(PostCreateRequest postCreateRequest) {
@@ -54,6 +60,8 @@ public class PostService {
             postLikes.remove(userId);
         } else {
             postLikes.add(userId);
+            Like like = new Like(postId, userId, LocalDateTime.now());
+            kafkaTemplate.send(TOPIC_LIKES, like);
         }
 
         postRepository.save(post);

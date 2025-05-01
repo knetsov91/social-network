@@ -37,18 +37,11 @@ services:
     volumes:
       - social_network_users_db_data:/var/lib/mysql
 
-  chat-service-mongo-db:
-    image: mongo
+  kafka:
+    image: apache/kafka:4.0.0
     ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    volumes:
-      - social_network_posts_db_data:/data/db
-
+      - "9092:9092"  
 volumes:
   vault_data:
   social_network_db_data:
-  social_network_users_db_data:
-  social_network_posts_db_data:
+  social_network_users_db_data:    
