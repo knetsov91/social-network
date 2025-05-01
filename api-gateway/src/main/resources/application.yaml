@@ -19,7 +19,9 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/*/tokens/**
-
+        - id: notifications
+          uri: lb://notification-service
+            - Path=/api/*/notifications
 eureka:
   client:
     service-url:
