@@ -15,5 +15,5 @@ eureka:
 logging:
   level:
     org.springframework.web.socket: DEBUG
-    org.springframework.web.socket.server: DEBUG
-    org.springframework.messaging.simp: DEBUG
+    org.springframework.web.socket.server: TRACE
+    org.springframework.messaging.simp: TRACE
