@@ -27,6 +27,16 @@ spring:
           uri: lb:ws://notification-service
           predicates:
             - Path=/ws-endpoint/**
+          metadata:
+            cors:
+              allowedOrigins: 'http://localhost:5173'
+              allowedMethods:
+                - GET
+                - OPTION
+                - POST
+              allowedHeaders: '*'
+              allowCredentials: true
+
 
 eureka:
   client:
