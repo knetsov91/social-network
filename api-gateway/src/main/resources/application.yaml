@@ -21,7 +21,25 @@ spring:
             - Path=/api/*/tokens/**
         - id: notifications
           uri: lb://notification-service
+          predicates:
             - Path=/api/*/notifications
+        - id: websocket
+          uri: lb:ws://notification-service
+          predicates:
+            - Path=/ws-endpoint/**
+          metadata:
+            cors:
+              allowedOrigins: 'http://localhost:5173'
+              allowedMethods:
+                - GET
+                - OPTION
+                - POST
+              allowedHeaders: '*'
+              allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
+
 eureka:
   client:
     service-url:
@@ -32,7 +50,8 @@ logging:
     org:
       springframework:
         cloud:
-          loadbalancer: error
+          loadbalancer: TRACE
+          gateway: TRACE
 
 management:
   endpoints:
