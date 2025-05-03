@@ -1,5 +1,9 @@
 package posts.social.com.postservice.post.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import posts.social.com.postservice.Like;
@@ -65,5 +69,10 @@ public class PostService {
         }
 
         postRepository.save(post);
+    }
+
+    public Page<Post> getFeedPosts(int pageNumber, int pageSize) {
+        Pageable p = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt"));
+        return postRepository.findAll(p);//(Sort.by("createdAt"));
     }
 }
