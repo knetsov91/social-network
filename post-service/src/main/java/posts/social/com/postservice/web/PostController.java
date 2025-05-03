@@ -1,11 +1,13 @@
 package posts.social.com.postservice.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.service.PostService;
 import posts.social.com.postservice.web.dto.AuthorPostsResponse;
+import posts.social.com.postservice.web.dto.PageablePostsResponse;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 import java.util.List;
 import java.util.UUID;
@@ -59,5 +61,15 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/feed")
+    public PageablePostsResponse paginatedPosts(@RequestParam("page") int page,
+                                     @RequestParam("size") int size) {
+        Page<Post> feed = postService.getFeedPosts(page, size);
+        PageablePostsResponse pageablePostsResponse = Mapper.mapPageablePostsToPageablePostsResponse(feed);
+
+
+        return pageablePostsResponse;
     }
 }
