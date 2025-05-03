@@ -29,7 +29,7 @@ spring:
             - Path=/ws-endpoint/**
           metadata:
             cors:
-              allowedOrigins: 'http://localhost:5173'
+              allowedOrigins: ${frontend.origin}
               allowedMethods:
                 - GET
                 - OPTION
@@ -60,3 +60,6 @@ management:
         include: health, info, metrics
     health:
       show-details: always
+
+frontend:
+  origin: ${FRONTEND_ORIGIN:http://localhost:5173}
