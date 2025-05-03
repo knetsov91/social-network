@@ -37,4 +37,4 @@ auth:
   url: http://localhost:8085/api/v1/tokens
 
 frontend:
-  url: http://localhost:5174
+  url: http://localhost:5173
