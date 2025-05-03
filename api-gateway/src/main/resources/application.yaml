@@ -11,6 +11,14 @@ spring:
           uri: lb://post-service
           predicates:
             - Path=/api/*/posts/**
+          metadata:
+            cors:
+              allowedOrigins: ${frontend.origin}
+              allowedMethods:
+                - GET
+                - OPTION
+              allowCredentials: true
+              allowedHeaders: '*'
         - id: user
           uri: lb://user-service
           predicates:
