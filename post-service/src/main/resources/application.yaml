@@ -27,6 +27,11 @@ spring:
         enabled: true
         default-context: secret
       fail-fast: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT}
+
 
 server:
   port: 0
