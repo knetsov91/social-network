@@ -1,5 +1,6 @@
 package posts.social.com.postservice.post.service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,7 @@ public class PostService {
         postRepository.save(post);
     }
 
+    @Cacheable(value = "posts", key="#authorId")
     public List<Post> getPosts(UUID authorId) {
         Optional<List<Post>> posts = postRepository
                 .findByAuthorId(authorId);
