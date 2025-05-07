@@ -8,5 +8,7 @@ PostgresSQL RDBMS is used for data persistence. Interaction with database and da
 <h2>Functional requirements</h2>
 <ul>
     <li>User can follow other users.</li>
-    <li>User can search for other users</li>
+    <li>User can search for other users.</li>
+    <li>User can login with username and password.</li>
+    <li>User can view and update their profile details.</li>
 </ul>
