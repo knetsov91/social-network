@@ -8,4 +8,5 @@
     <li>User can create post - Done</li>
     <li>User can like other users posts - Done</li>
     <li>User can comment on posts.</li>
+    <li>User can view its posts.</li>
 </ul>
