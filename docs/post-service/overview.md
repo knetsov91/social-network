@@ -5,5 +5,7 @@
 
 <h2>Functional requirements</h2>
 <ul>
-    <li>User can create post</li>
+    <li>User can create post - Done</li>
+    <li>User can like other users posts - Done</li>
+    <li>User can comment on posts.</li>
 </ul>
