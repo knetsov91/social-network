@@ -11,6 +11,7 @@ import social.com.userservice.auth.client.dto.TokenIssueResponse;
 import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
+import social.com.userservice.web.dto.GetAllUsersResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.util.List;
@@ -53,8 +54,9 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<GetAllUsersResponse>> getAllUsers() {
         List<User> users = userService.getAll();
-        return ResponseEntity.ok(users);
+        List<GetAllUsersResponse> getAllUsersResponses = Mapper.mapUsersToGetAllUsersResponse(users);
+        return ResponseEntity.ok(getAllUsersResponses);
     }
 }
