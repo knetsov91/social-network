@@ -11,14 +11,52 @@ spring:
           uri: lb://post-service
           predicates:
             - Path=/api/*/posts/**
+          metadata:
+            cors:
+              allowedOrigins: ${frontend.origin}
+              allowedMethods:
+                - GET
+                - OPTION
+              allowCredentials: true
+              allowedHeaders: '*'
         - id: user
           uri: lb://user-service
           predicates:
             - Path=/api/*/users/**
+          metadata:
+            cors:
+              allowedOrigins: ${frontend.origin}
+              allowedMethods:
+                - GET
+                - POST
+                - OPTIONS
+              allowedHeaders: '*'
+              allowCredentials: true
+
         - id: auth
           uri: lb://auth-service
           predicates:
             - Path=/api/*/tokens/**
+        - id: notifications
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/*/notifications
+        - id: websocket
+          uri: lb:ws://notification-service
+          predicates:
+            - Path=/ws-endpoint/**
+          metadata:
+            cors:
+              allowedOrigins: ${frontend.origin}
+              allowedMethods:
+                - GET
+                - OPTION
+                - POST
+              allowedHeaders: '*'
+              allowCredentials: true
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+
 
 eureka:
   client:
@@ -30,7 +68,8 @@ logging:
     org:
       springframework:
         cloud:
-          loadbalancer: error
+          loadbalancer: TRACE
+          gateway: TRACE
 
 management:
   endpoints:
@@ -39,3 +78,6 @@ management:
         include: health, info, metrics
     health:
       show-details: always
+
+frontend:
+  origin: ${FRONTEND_ORIGIN:http://localhost:5173}

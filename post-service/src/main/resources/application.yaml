@@ -41,3 +41,18 @@ eureka:
 logging:
   level:
     org.springframework.cloud.vault: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /api/v1/posts/swagger-ui
+  api-docs:
+    path: /api/v1/posts/api-docs
