@@ -13,6 +13,7 @@ import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -49,5 +50,11 @@ public class UserController {
         TokenIssueResponse tokenIssueResponse = authService.issueToken(tokenIssueRequest);
 
         return ResponseEntity.ok(tokenIssueResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAll();
+        return ResponseEntity.ok(users);
     }
 }
