@@ -25,12 +25,14 @@ import java.util.List;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
+    private final UserDetailsService userDetailsService;
     private UserRepository userRepository;
     @Value("${frontend.url}") String frontendUrl;
 
     private JwtFilter jwtFilter;
 
-    public SecurityConfig(UserRepository userRepository, JwtFilter jwtFilter) {
+    public SecurityConfig(UserDetailsService userDetailsService, UserRepository userRepository, JwtFilter jwtFilter) {
+        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
         this.jwtFilter = jwtFilter;
     }
@@ -56,14 +58,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Bean
-    UserDetailsService userDetailsService() {
-        System.out.println();
-        return username -> userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
 
-    }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -73,7 +68,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         return daoAuthenticationProvider;
     }
 
