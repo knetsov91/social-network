@@ -16,8 +16,9 @@ public class ExceptionController {
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ExceptionResponse> handleJwtException(JwtException e) {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
-        exceptionResponse.setMessage(e.getMessage());
+        exceptionResponse.setMessage("Invalid JWT");
         exceptionResponse.setStausCode(HttpStatus.BAD_REQUEST.value());
+        log.error(e.getMessage(), e);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
