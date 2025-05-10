@@ -27,6 +27,7 @@ public class ExceptionController {
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage("JWT has expired");
         exceptionResponse.setStausCode(HttpStatus.UNAUTHORIZED.value());
+        log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
