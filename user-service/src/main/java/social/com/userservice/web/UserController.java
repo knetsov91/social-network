@@ -5,8 +5,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import social.com.userservice.auth.client.dto.TokenIssueRequest;
+import social.com.userservice.auth.client.dto.TokenIssueResponse;
+import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
 import social.com.userservice.web.dto.UserLoginRequest;
@@ -18,9 +20,11 @@ public class UserController {
 
     private UserService userService;
     private AuthenticationManager authenticationManager;
-    public UserController(UserService userService, AuthenticationManager authenticationManager) {
+    private AuthService authService;
+    public UserController(UserService userService, AuthenticationManager authenticationManager, AuthService authService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.authService = authService;
     }
 
     @PostMapping("/register")
@@ -39,10 +43,11 @@ public class UserController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auht);
-        UserDetails user = (UserDetails) auht.getPrincipal();
+        User user = (User) auht.getPrincipal();
 
-        // TODO: call JWT service to generate token
+        TokenIssueRequest tokenIssueRequest = Mapper.mapUserToTokenIssueRequest(user);
+        TokenIssueResponse tokenIssueResponse = authService.issueToken(tokenIssueRequest);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(tokenIssueResponse);
     }
 }
