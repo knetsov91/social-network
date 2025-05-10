@@ -1,5 +1,6 @@
 package social.com.authservice.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -29,6 +30,16 @@ public class JwtUtil {
                 .setExpiration(new Date(now.getTime() + expiration))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public boolean isTokenValid(String token) {
+        Claims body = Jwts.parser()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return true;
     }
 
     private Key getKey() {
