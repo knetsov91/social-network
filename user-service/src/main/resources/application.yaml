@@ -38,3 +38,9 @@ auth:
 
 frontend:
   url: http://localhost:5174
+
+springdoc:
+  swagger-ui:
+    path: /api/v1/users/swagger-ui
+  api-docs:
+    path: /api/v1/users/api-docs
