@@ -6,6 +6,7 @@ import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserService{
@@ -31,5 +32,9 @@ public class UserService{
         user.setPassword(encode);
         user.setActive(true);
         return userRepository.save(user);
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 }
