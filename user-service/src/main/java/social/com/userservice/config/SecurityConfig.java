@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import social.com.userservice.security.JwtFilter;
 import social.com.userservice.user.repository.UserRepository;
 
 import java.util.List;
@@ -25,8 +27,12 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     private UserRepository userRepository;
     @Value("${frontend.url}") String frontendUrl;
-    public SecurityConfig(UserRepository userRepository) {
+
+    private JwtFilter jwtFilter;
+
+    public SecurityConfig(UserRepository userRepository, JwtFilter jwtFilter) {
         this.userRepository = userRepository;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -43,7 +49,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .anyRequest().authenticated()
             ).csrf(c -> c.disable())
            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//           .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
            .build();
     }
     @Bean
