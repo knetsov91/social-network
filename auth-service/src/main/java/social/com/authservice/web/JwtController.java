@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import social.com.authservice.util.JwtUtil;
 import social.com.authservice.web.dto.TokenCreateRequest;
 import social.com.authservice.web.dto.TokenCreateResponse;
+import social.com.authservice.web.dto.TokenValidateRequest;
 import java.util.Map;
 
 @RestController
@@ -25,5 +26,12 @@ public class JwtController {
         response.setToken(jwtToken);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity validateToken(@RequestBody TokenValidateRequest token) {
+        jwtUtil.isTokenValid(token.token());
+
+        return ResponseEntity.ok().body(token);
     }
 }
