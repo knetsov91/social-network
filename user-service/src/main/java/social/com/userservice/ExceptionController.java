@@ -31,6 +31,11 @@ public class ExceptionController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> validation(MethodArgumentNotValidException ex) {
         String collect = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.joining("\n"));
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(collect);
+        errorResponse.setCode("400");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
