@@ -59,7 +59,7 @@ public class UserController {
                 .secure(true)
                 .path("/")
                 .maxAge(3600000)
-                .sameSite(SameSiteCookies.STRICT.toString())
+                .sameSite(SameSiteCookies.NONE.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
         return ResponseEntity.ok().build();
