@@ -1,6 +1,10 @@
 package social.com.userservice.web;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.apache.tomcat.util.http.SameSiteCookies;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody UserLoginRequest userLoginRequest) {
+    public ResponseEntity login(@Valid @RequestBody UserLoginRequest userLoginRequest, HttpServletResponse response) {
 
         Authentication auht = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginRequest.getUsername(), userLoginRequest.getPassword())
@@ -50,8 +54,15 @@ public class UserController {
 
         TokenIssueRequest tokenIssueRequest = Mapper.mapUserToTokenIssueRequest(user);
         TokenIssueResponse tokenIssueResponse = authService.issueToken(tokenIssueRequest);
-
-        return ResponseEntity.ok(tokenIssueResponse);
+        ResponseCookie responseCookie = ResponseCookie.from("token", tokenIssueResponse.getToken())
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(3600000)
+                .sameSite(SameSiteCookies.STRICT.toString())
+                .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
