@@ -2,6 +2,9 @@ package social.com.authservice.web;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import social.com.authservice.token.service.TokenService;
+import social.com.authservice.web.dto.InvalidateTokenRequest;
+import social.com.authservice.token.repository.TokenRepository;
 import social.com.authservice.util.JwtUtil;
 import social.com.authservice.web.dto.TokenCreateRequest;
 import social.com.authservice.web.dto.TokenCreateResponse;
@@ -13,9 +16,13 @@ import java.util.Map;
 public class JwtController {
 
     private JwtUtil jwtUtil;
+    private TokenRepository tokenRepository;
+    private TokenService tokenService;
 
-    public JwtController(JwtUtil jwtUtil) {
+    public JwtController(JwtUtil jwtUtil, TokenRepository tokenRepository, TokenService tokenService) {
         this.jwtUtil = jwtUtil;
+        this.tokenRepository = tokenRepository;
+        this.tokenService = tokenService;
     }
 
     @PostMapping("/issue")
@@ -30,8 +37,15 @@ public class JwtController {
 
     @PostMapping("/validate")
     public ResponseEntity validateToken(@RequestBody TokenValidateRequest token) {
+       tokenService.isValid(token);
         jwtUtil.isTokenValid(token.token());
 
         return ResponseEntity.ok().body(token);
+    }
+
+    @PostMapping("/invalidate")
+    public ResponseEntity blacklistToken(@RequestBody InvalidateTokenRequest token) {
+        tokenService.invalidateToken(token);
+        return ResponseEntity.ok().build();
     }
 }
