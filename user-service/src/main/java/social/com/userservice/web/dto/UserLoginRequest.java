@@ -12,6 +12,6 @@ public class UserLoginRequest {
     private String username;
 
     @NotEmpty
-    @Size(min = 8, message = "Username must be at least 8 symbols.")
+    @Size(min = 8, message = "Password must be at least 8 symbols.")
     private String password;
 }
