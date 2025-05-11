@@ -14,6 +14,7 @@ main functionalities related to posts, users, authentication etc. are in separat
   <li>React JS</li>
   <li>PostgreSql</li>
   <li>MongoDb</li>
+  <li>Redis</li>
   <li>Docker</li>
   <li>JUnit5</li>
   <li>HashiCorp Vault</li>
