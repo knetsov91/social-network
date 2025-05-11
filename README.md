@@ -22,6 +22,14 @@ main functionalities related to posts, users, authentication etc. are in separat
 <ul>
     <li><b>Problem</b>: <b>ClassCastException</b> exception when caching posts. <br>
         <b>Solution</b>: disable spring-boot-devtools dependency  </li>
+    <li><b>Problem</b>: When implement UserDetailsService as lambda or in UserDetails service there is circular dependency when used in OncePerRequestFilter. <br>
+        <b>Solution</b>: Implement UserDetailsService as Bean in separate class.</li>
+    <li><b>Problem</b>: When use HandlerExceptionResolver in OncePerRequestFilter there is circular dependency.<br>
+        <b>Solution</b>: Use field injection with @Lazy annotation. (<u>Temporary fix</u>)</li>
+    <li><b>Problem</b>: CORS - duplicated Access-Control-Allow-Origin in response headers. <br>
+        <b>Solution</b>: Add DedupeResponseHeader in API Gateway's <b>default-filters</b> property.</li>
+    <li><b>Problem</b>: When caching entity that contains LAZY loaded collection gives "failed to lazily initialize a collection of role: ... could not initialize proxy - no Session"<br>
+        <b>Solution</b>: Make Lazy loaded collection in Post entity as eagerly loaded.</li>
 </ul>
 <p>
 For more information about <b>database</b> visit  
