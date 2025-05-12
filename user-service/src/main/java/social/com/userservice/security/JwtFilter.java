@@ -38,11 +38,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Cookie[] cookies = request.getCookies();
-        
+        if (cookies == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         Optional<Cookie> token = Arrays.stream(cookies)
                 .filter(cookie -> cookie.getName().equals("token"))
                 .findFirst();
-
 
         if (token.isEmpty()) {
             filterChain.doFilter(request, response);
