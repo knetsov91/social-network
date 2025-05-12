@@ -18,6 +18,8 @@ main functionalities related to posts, users, authentication etc. are in separat
   <li>Docker</li>
   <li>JUnit5</li>
   <li>HashiCorp Vault</li>
+  <li>Prometheus</li>
+  <li>Grafana</li>
 </ul> 
 <h3>Encountered problems</h3>
 <ul>
