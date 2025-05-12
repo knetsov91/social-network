@@ -19,7 +19,7 @@ public class Mapper {
     public static List<GetAllUsersResponse> mapUsersToGetAllUsersResponse(List<User> users) {
         List<GetAllUsersResponse> usersResponse = new ArrayList<>();
         for (User user : users) {
-            GetAllUsersResponse userResponse = new GetAllUsersResponse(user.getUsername());
+            GetAllUsersResponse userResponse = new GetAllUsersResponse(user.getId(), user.getUsername());
             usersResponse.add(userResponse);
         }
 
