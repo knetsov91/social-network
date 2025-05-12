@@ -3,6 +3,7 @@ package social.com.userservice.security;
 import feign.FeignException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import social.com.userservice.auth.client.AuthClient;
 import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -34,14 +37,19 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        Cookie[] cookies = request.getCookies();
+        
+        Optional<Cookie> token = Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals("token"))
+                .findFirst();
 
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
+
+        if (token.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
         try {
-            String jwtToken = authorization.split(" ")[1];
+            String jwtToken = token.get().getValue();
             ResponseEntity responseEntity = authClient.validateToken(new TokenValidationRequest(jwtToken));
             if (responseEntity.getStatusCode().value() == 200) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
