@@ -1,6 +1,7 @@
 package social.com.userservice;
 
 import feign.FeignException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import social.com.userservice.web.dto.ErrorResponse;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class ExceptionController {
 
@@ -23,8 +25,9 @@ public class ExceptionController {
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handle(FeignException e) {
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMessage(e.getMessage());
+        errorResponse.setMessage("Communication error");
         errorResponse.setCode(String.valueOf(e.status()));
+        log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
