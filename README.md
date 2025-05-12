@@ -33,6 +33,10 @@ main functionalities related to posts, users, authentication etc. are in separat
         <b>Solution</b>: Add DedupeResponseHeader in API Gateway's <b>default-filters</b> property.</li>
     <li><b>Problem</b>: When caching entity that contains LAZY loaded collection gives "failed to lazily initialize a collection of role: ... could not initialize proxy - no Session"<br>
         <b>Solution</b>: Make Lazy loaded collection in Post entity as eagerly loaded.</li>
+    <li><b>Problem</b>: When build image in docker-compose.yaml give "ERROR: unable to prepare context: path "[Dockerfile-directory]/Dockerfile" not found".<br>
+        <b>Solution</b>: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.</li>
+    <li><b>Problem</b>: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: "Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://service_disc:8761/eureka/}, exception=Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE stacktrace=java.lang.IllegalStateException: Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE".<br>
+        <b>Solution</b>: Service name must not contains "-" character. </li>
 </ul>
 <p>
 For more information about <b>database</b> visit  
