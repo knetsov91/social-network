@@ -1,6 +1,7 @@
 package social.com.userservice;
 
 import feign.FeignException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import social.com.userservice.exceptions.ExpiredTokenException;
 import social.com.userservice.web.dto.ErrorResponse;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -19,6 +22,17 @@ public class ExceptionController {
 
     @ExceptionHandler(ExpiredTokenException.class)
     public ResponseEntity<ErrorResponse> handleExpiredTokenException(HttpServletRequest req, HttpServletResponse resp, ExpiredTokenException e) {
+        Cookie[] cookies = req.getCookies();
+        Optional<Cookie> token = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("token"))
+                .findFirst();
+
+        if (token.isPresent()) {
+            Cookie cookie = new Cookie("token", null);
+            cookie.setMaxAge(0);
+            cookie.setPath("/");
+            resp.addCookie(cookie);
+        }
+
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage("Expired Token");
         errorResponse.setCode("401");
