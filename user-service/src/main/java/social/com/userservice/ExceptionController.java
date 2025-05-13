@@ -1,12 +1,15 @@
 package social.com.userservice;
 
 import feign.FeignException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import social.com.userservice.exceptions.ExpiredTokenException;
 import social.com.userservice.web.dto.ErrorResponse;
 import java.util.stream.Collectors;
 
@@ -14,6 +17,13 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class ExceptionController {
 
+    @ExceptionHandler(ExpiredTokenException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredTokenException(HttpServletRequest req, HttpServletResponse resp, ExpiredTokenException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage("Expired Token");
+        errorResponse.setCode("401");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse();
