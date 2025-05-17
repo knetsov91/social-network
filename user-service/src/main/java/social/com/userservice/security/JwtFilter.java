@@ -53,7 +53,8 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String jwtToken = token.get().getValue();
             ResponseEntity responseEntity = authService.validateToken(new TokenValidationRequest(jwtToken));
-            if (responseEntity.getStatusCode().value() == 200) {
+            ResponseEntity tokenInvalidatedCheck = authService.checkIfInvalidated(jwtToken);
+            if (tokenInvalidatedCheck.getStatusCode().value() == 200) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 UserDetails u1 = userDetailsService.loadUserByUsername("u1");
                 if (authentication == null) {
