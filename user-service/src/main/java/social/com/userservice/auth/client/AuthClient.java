@@ -15,4 +15,7 @@ public interface AuthClient {
 
     @PostMapping("/validate")
     ResponseEntity validateToken(@RequestBody TokenValidationRequest tokenValidationRequest);
+
+    @PostMapping("/is-invalidated")
+    ResponseEntity isInvalidated(@RequestBody TokenValidationRequest token);
 }
