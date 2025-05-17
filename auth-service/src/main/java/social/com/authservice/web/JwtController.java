@@ -1,5 +1,6 @@
 package social.com.authservice.web;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import social.com.authservice.token.service.TokenService;
@@ -46,6 +47,15 @@ public class JwtController {
     @PostMapping("/invalidate")
     public ResponseEntity blacklistToken(@RequestBody InvalidateTokenRequest token) {
         tokenService.invalidateToken(token);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/is-invalidated")
+    public ResponseEntity isInvalidateToken(@RequestBody TokenValidateRequest token) {
+        boolean invalidated = tokenService.isInvalidated(token);
+        if (invalidated) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
         return ResponseEntity.ok().build();
     }
 }

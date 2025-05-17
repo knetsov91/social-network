@@ -30,4 +30,11 @@ public class TokenService {
         }
     }
 
+    public boolean isInvalidated(TokenValidateRequest token) {
+        Optional<Token> byToken = tokenRepository.findByToken(token.token());
+        if (byToken.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
 }

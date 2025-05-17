@@ -6,6 +6,18 @@ spring:
     url: jdbc:mysql://localhost:3306/${DB}
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
+  ssl:
+    bundle:
+      jks:
+        client:
+          keystore:
+            location: classpath:keystore/ko2.p12
+            password: ${KEY_STORE_PASSWORD}
+            type: PKCS12
+          truststore:
+            location: classpath:keystore/ko2.p12
+            password: ${KEY_STORE_PASSWORD}
+            type: PKCS12
 
   jpa:
     show-sql: true
@@ -34,7 +46,7 @@ logging:
       springframework:
         security: DEBUG
 auth:
-  url: http://localhost:8085/api/v1/tokens
+  url: https://localhost:8085/api/v1/tokens
 
 frontend:
   url: http://localhost:5174
@@ -44,3 +56,5 @@ springdoc:
     path: /api/v1/users/swagger-ui
   api-docs:
     path: /api/v1/users/api-docs
+
+

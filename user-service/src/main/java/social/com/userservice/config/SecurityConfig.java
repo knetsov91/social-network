@@ -78,7 +78,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "https://localhost:5173"));
         return corsConfiguration;
     }
 }
