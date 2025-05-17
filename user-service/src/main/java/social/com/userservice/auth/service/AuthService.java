@@ -1,7 +1,6 @@
 package social.com.userservice.auth.service;
 
 import feign.FeignException;
-import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +10,6 @@ import social.com.userservice.auth.client.dto.TokenIssueRequest;
 import social.com.userservice.auth.client.dto.TokenIssueResponse;
 import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.exceptions.ExpiredTokenException;
-
 
 @Service
 public class AuthService {
@@ -35,6 +33,19 @@ public class AuthService {
         } catch (FeignException.Unauthorized e) {
             logger.error(e.getMessage());
             throw  new ExpiredTokenException(e.getMessage(), e);
+        }
+        return responseEntity;
+    }
+
+    public ResponseEntity checkIfInvalidated(String token) {
+
+        ResponseEntity responseEntity = null;
+        try {
+            TokenValidationRequest requestToken = new TokenValidationRequest(token);
+
+             responseEntity = authClient.isInvalidated(requestToken);
+        } catch (FeignException e) {
+            logger.error(e.getMessage());
         }
         return responseEntity;
     }
