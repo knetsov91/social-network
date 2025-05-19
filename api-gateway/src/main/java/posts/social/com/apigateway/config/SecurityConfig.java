@@ -18,7 +18,7 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception {
         return  http.authorizeExchange(req ->
-                req.pathMatchers("/api/v1/users/login", "/api/v1/users/register").permitAll()
+                req.pathMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/tokens/**").permitAll()
                         .anyExchange().authenticated())
                 .csrf(c -> c.disable())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(token -> token.jwtDecoder(jwtDecode())))
