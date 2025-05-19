@@ -92,3 +92,4 @@ frontend:
 
 auth:
   url: https://localhost:8085/api/v1/tokens
+  key: ${JWT_KEY}
