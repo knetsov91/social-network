@@ -89,3 +89,6 @@ management:
 frontend:
   origin: ${FRONTEND_ORIGIN:http://localhost:5173}
   originHTTPS: https://localhost:5173
+
+auth:
+  url: https://localhost:8085/api/v1/tokens
