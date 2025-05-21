@@ -11,6 +11,7 @@ import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import static org.mockito.Mockito.*;
 
 
@@ -41,20 +42,24 @@ class UserServiceUTest {
     public void test_happy_case() {
         String password = "password";
         String hashedPassword = "hashedPassword";
+        String username = "username";
         LocalDateTime now = LocalDateTime.now();
+        now = now.truncatedTo(ChronoUnit.SECONDS);
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+        userRegisterRequest.setPassword(password);
+        userRegisterRequest.setConfirmPassword(password);
+        userRegisterRequest.setUsername(username);
 
         when(passwordEncoder.encode(password)).thenReturn(hashedPassword);
 
         User user = new User();
-        user.setPassword(passwordEncoder.encode(password));
-        user.setUsername("username");
+        user.setPassword(hashedPassword);
+        user.setUsername(username);
         user.setActive(true);
         user.setCreatedAt(now);
 
-        when(userRepository.save(user)).thenReturn(user);
-
-        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
-        userRepository.save(user);
+        when(userRepository.save(any())).thenReturn(user);
+       userService.register(userRegisterRequest);
 
         verify(userRepository, times(1)).save(user);
         Assertions.assertEquals(user.getPassword(), hashedPassword);
