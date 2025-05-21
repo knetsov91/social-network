@@ -6,6 +6,7 @@ import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -28,7 +29,7 @@ public class UserService{
         String encode = passwordEncoder.encode(userRegisterRequest.getPassword());
         User user = new User();
         user.setUsername(userRegisterRequest.getUsername());
-        user.setCreatedAt(LocalDateTime.now());
+        user.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         user.setPassword(encode);
         user.setActive(true);
         return userRepository.save(user);
