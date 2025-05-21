@@ -37,6 +37,10 @@ main functionalities related to posts, users, authentication etc. are in separat
         <b>Solution</b>: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.</li>
     <li><b>Problem</b>: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: "Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://service_disc:8761/eureka/}, exception=Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE stacktrace=java.lang.IllegalStateException: Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE".<br>
         <b>Solution</b>: Service name must not contains "-" character. </li>
+    <li><b>Problem</b>: Handling exceptions globaly in CustomErrorWebExceptionHandler class return response without body.<br>
+        <b>Solution</b>: Add getters and setters for the class returned in response body. </li>
+    <li><b>Problem</b>: When using WebClient to make requests to service that use self-signed certificate gives "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target".<br>
+        <b>Solution</b>: Configuring WebClient with a custom Truststore. </li>
 </ul>
 <p>
 For more information about <b>database</b> visit  
