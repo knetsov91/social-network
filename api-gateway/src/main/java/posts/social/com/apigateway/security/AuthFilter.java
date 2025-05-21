@@ -17,7 +17,9 @@ import java.util.List;
 public class AuthFilter implements WebFilter, Ordered {
 
     private static final Logger log = LoggerFactory.getLogger(AuthFilter.class);
-    private List<String> unauthorizedUrls = List.of("/api/v1/users/login", "/api/v1/users/register");
+    private List<String> unauthorizedUrls = List.of("/api/v1/users/login",
+            "/api/v1/users/register",
+            "/actuator/prometheus");
     private AuthService authService;
 
     public AuthFilter(AuthService authService ) {
