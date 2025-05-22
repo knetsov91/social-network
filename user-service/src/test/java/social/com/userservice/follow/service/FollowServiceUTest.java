@@ -4,14 +4,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import social.com.userservice.common.TimeProvider;
 import social.com.userservice.follow.model.Follow;
 import social.com.userservice.follow.repository.FollowRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FollowServiceUTest {
@@ -22,19 +21,25 @@ class FollowServiceUTest {
     @Mock
     private FollowRepository followRepository;
 
+    @Mock
+    private TimeProvider timeProvider;
+
     @Test
     void test_follow_happyPath() {
-        Follow follow = new Follow();
         UUID followerId = UUID.randomUUID();
-        follow.setFollowerId(followerId);
         UUID followeeId = UUID.randomUUID();
-        follow.setFolloweeId(followeeId);
+        LocalDateTime now = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-        Mockito.when(followRepository.save(follow)).thenReturn(follow);
-        followRepository.save(follow);
+        Follow follow = new Follow();
+        follow.setFollowerId(followerId);
+        follow.setFolloweeId(followeeId);
+        follow.setCreatedAt(now);
+
+        when(timeProvider.now()).thenReturn(now);
+        when(followRepository.save(any())).thenReturn(follow);
+
+        followService.follow(followerId, followeeId);
 
         verify(followRepository, times(1)).save(follow);
-        assertEquals(followerId, follow.getFollowerId());
-        assertEquals(followeeId, follow.getFolloweeId());
     }
 }
