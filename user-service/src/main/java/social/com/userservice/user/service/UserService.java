@@ -8,6 +8,7 @@ import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService{
@@ -24,6 +25,10 @@ public class UserService{
 
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
             throw new RuntimeException("Passwords do not match");
+        }
+        Optional<User> byUsername = userRepository.findByUsername(userRegisterRequest.getUsername());
+        if (byUsername.isPresent()) {
+            throw new RuntimeException("Username already exists");
         }
 
         String encode = passwordEncoder.encode(userRegisterRequest.getPassword());
