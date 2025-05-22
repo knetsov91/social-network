@@ -12,6 +12,7 @@ import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import static org.mockito.Mockito.*;
 
 
@@ -36,6 +37,17 @@ class UserServiceUTest {
 
         Assertions.assertThrows(RuntimeException.class, () -> userService.register(userRegisterRequest));
 
+    }
+
+    @Test
+    public void testRegister_whenUserExists_thenThrowException() {
+        UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
+        userRegisterRequest.setPassword("password");
+        userRegisterRequest.setConfirmPassword("password");
+
+        when(userRepository.findByUsername(any())).thenReturn(Optional.of(new User()));
+        Assertions.assertThrows(RuntimeException.class, () -> userService.register(userRegisterRequest));
+        verify(userRepository, times(0)).save(any());
     }
 
     @Test
