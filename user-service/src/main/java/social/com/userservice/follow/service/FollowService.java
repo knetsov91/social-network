@@ -4,7 +4,10 @@ import org.springframework.stereotype.Service;
 import social.com.userservice.common.TimeProvider;
 import social.com.userservice.follow.model.Follow;
 import social.com.userservice.follow.repository.FollowRepository;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class FollowService {
@@ -25,5 +28,14 @@ public class FollowService {
         follow.setCreatedAt(timeProvider.now());
 
         followRepository.save(follow);
+    }
+
+    public List<UUID> getUserFollowings(UUID userId) {
+        Optional<List<Follow>> byFollowerId = followRepository.findByFollowerId(userId);
+        if (byFollowerId.isEmpty()) {}
+
+        return byFollowerId.get().stream()
+                .map(Follow::getFolloweeId)
+                .collect(Collectors.toList());
     }
 }
