@@ -6,6 +6,7 @@ server:
     key-store: classpath:keystore/ko2.p12
     key-store-password: ${KEY_STORE_PASSWORD}
     key-alias: ko2
+  address: 0.0.0.0
 
 spring:
   application:
