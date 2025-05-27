@@ -1,0 +1,33 @@
+spring:
+  ssl:
+    bundle:
+      jks:
+        client:
+          keystore:
+            location: classpath:keystore/ko2.p12
+            password: ${KEY_STORE_PASSWORD}
+            type: PKCS12
+          truststore:
+            location: classpath:keystore/ko2.p12
+            password: ${KEY_STORE_PASSWORD}
+            type: PKCS12
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+
+auth:
+  url: https://localhost:8085/api/v1/tokens
+
+frontend:
+  url: http://localhost:5174

@@ -1,4 +1,8 @@
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   application:
     name: auth-service
 server:
@@ -14,3 +18,18 @@ eureka:
 jwt:
   expiration-time: ${JWT_EXP_TIME}
   secret-key: ${JWT_SECRET_KEY}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  swagger-ui:
+    path: /api/v1/tokens/swagger-ui
+  api-docs:
+    path: /api/v1/tokens/api-docs

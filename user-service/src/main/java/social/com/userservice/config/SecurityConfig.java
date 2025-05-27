@@ -14,8 +14,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import social.com.userservice.security.JwtFilter;
 import social.com.userservice.user.repository.UserRepository;
 
 import java.util.List;
@@ -23,10 +25,16 @@ import java.util.List;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
 
+    private final UserDetailsService userDetailsService;
     private UserRepository userRepository;
     @Value("${frontend.url}") String frontendUrl;
-    public SecurityConfig(UserRepository userRepository) {
+
+    private JwtFilter jwtFilter;
+
+    public SecurityConfig(UserDetailsService userDetailsService, UserRepository userRepository, JwtFilter jwtFilter) {
+        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -43,21 +51,14 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .anyRequest().authenticated()
             ).csrf(c -> c.disable())
            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//           .addFilterAfter(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+           .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
            .build();
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    @Bean
-    UserDetailsService userDetailsService() {
-        System.out.println();
-        return username -> userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
 
-    }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
@@ -67,7 +68,7 @@ public class SecurityConfig implements WebMvcConfigurer {
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService());
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         return daoAuthenticationProvider;
     }
 
@@ -75,9 +76,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     public CorsConfiguration corsConfiguration() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization"));
+        corsConfiguration.setAllowedHeaders(List.of("Content-Type", "Authorization", "Accept"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-        corsConfiguration.setAllowedOrigins(List.of("*"));
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "https://localhost:5173"));
         return corsConfiguration;
     }
 }
