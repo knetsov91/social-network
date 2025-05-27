@@ -5,3 +5,8 @@
 in stateless manner which conform to RESTful architecture of the microservices by using JWT. Other microservices
 communicate synchronously with this one in order to issue, validate, revoke tokens.
 </p>
+
+<h2>Resources</h2>
+<ul>
+    <li>API documentation (<a href="./api/api.md">here</a>)</li>
+</ul>
