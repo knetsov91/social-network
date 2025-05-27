@@ -36,11 +36,14 @@ main functionalities related to posts, users, authentication etc. are in separat
     <li><b>Problem</b>: When build image in docker-compose.yaml give "ERROR: unable to prepare context: path "[Dockerfile-directory]/Dockerfile" not found".<br>
         <b>Solution</b>: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.</li>
     <li><b>Problem</b>: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: "Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://service_disc:8761/eureka/}, exception=Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE stacktrace=java.lang.IllegalStateException: Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE".<br>
-        <b>Solution</b>: Service name must not contains "-" character. </li>
-    <li><b>Problem</b>: Handling exceptions globaly in CustomErrorWebExceptionHandler class return response without body.<br>
+        <b>Solution</b>: Service name must not contain "-" character. </li>
+    <li><b>Problem</b>: Handling exceptions globally in CustomErrorWebExceptionHandler class return response without body.<br>
         <b>Solution</b>: Add getters and setters for the class returned in response body. </li>
     <li><b>Problem</b>: When using WebClient to make requests to service that use self-signed certificate gives "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target".<br>
         <b>Solution</b>: Configuring WebClient with a custom Truststore. </li>
+    <b><b>Problem</b>: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found (this database is empty); sql statement:".<br>
+        <b>Solution</b>: Use <b></b>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</b> instead of <b>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</b> in properties.yaml used for testing and use @Table(name="`user`") in User entity.</li>
+
 </ul>
 <p>
 For more information about <b>database</b> visit  
