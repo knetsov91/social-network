@@ -2,7 +2,14 @@
 
 <h2>Project overview</h2>
 <p>Project implement social network where people can create,like posts chat with other people. Microservice architecture is used where
-main functionalities related to posts, users, authentication etc. are in separate projects. These services are consumed from front-end SPA application implemented using React UI Javascript library. For data persistance SQL and NoSQL databases are used i.e MongoDb, PostgreSQL.JWT is used for authentication and authorization. 
+main functionalities related to posts, users, authentication etc. are in separate projects.
+These services are consumed from front-end SPA application implemented using React UI Javascript library.
+For data persistence SQL and NoSQL databases are used i.e. MongoDb, PostgreSQL. 
+JWT is used for authentication and authorization. Redis NoSQL datastore is used in some microservices
+as cache to offload pressure from the RDBMS. WebSocket protocol is used in some microservices for real-time communication.
+Observability is implemented by using Prometheus to collect and query
+metrics from microservices and Grafana for their visualization. Kafka is used for asynchronous communication
+between some microservices.
 
 </p>
 
@@ -12,11 +19,12 @@ main functionalities related to posts, users, authentication etc. are in separat
   <li>Spring Boot 3</li>
   <li>Spring Security 6</li>
   <li>React JS</li>
-  <li>PostgreSql</li>
+  <li>PostgreSQL</li>
   <li>MongoDb</li>
   <li>Redis</li>
   <li>Docker</li>
   <li>JUnit5</li>
+  <li>WebSocket</li>
   <li>HashiCorp Vault</li>
   <li>Prometheus</li>
   <li>Grafana</li>
