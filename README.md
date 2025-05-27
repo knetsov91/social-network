@@ -65,7 +65,7 @@ between some microservices
         <b>Solution</b>: Add getters and setters for the class returned in response body. </li>
     <li><b>Problem</b>: When using WebClient to make requests to service that use self-signed certificate gives "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target".<br>
         <b>Solution</b>: Configuring WebClient with a custom Truststore. </li>
-    <b><b>Problem</b>: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found (this database is empty); sql statement:".<br>
-        <b>Solution</b>: Use <b></b>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</b> instead of <b>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</b> in properties.yaml used for testing and use @Table(name="`user`") in User entity.</li>
+    <li><b>Problem</b>: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found (this database is empty); sql statement:".<br>
+        <b>Solution</b>: Use <b></b>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</li> instead of <b>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</b> in properties.yaml used for testing and use @Table(name="`user`") in User entity.</li>
 
 </ul>
