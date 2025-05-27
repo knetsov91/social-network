@@ -9,8 +9,7 @@ JWT is used for authentication and authorization. Redis NoSQL datastore is used 
 as cache to offload pressure from the RDBMS. WebSocket protocol is used in some microservices for real-time communication.
 Observability is implemented by using Prometheus to collect and query
 metrics from microservices and Grafana for their visualization. Kafka is used for asynchronous communication
-between some microservices.
-
+between some microservices
 </p>
 
 <h4>Tech stack</h4>
@@ -29,6 +28,14 @@ between some microservices.
   <li>Prometheus</li>
   <li>Grafana</li>
 </ul> 
+
+<p>
+    For more information about <b>database</b> visit  
+    <a href="./docs/database.md">here</a>.<br>
+    For more information about <b>architecture</b> visit  
+    <a href="./docs/architecture.md">here</a>.
+</p>
+
 <h3>Encountered problems</h3>
 <ul>
     <li><b>Problem</b>: <b>ClassCastException</b> exception when caching posts. <br>
@@ -53,10 +60,3 @@ between some microservices.
         <b>Solution</b>: Use <b></b>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</b> instead of <b>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</b> in properties.yaml used for testing and use @Table(name="`user`") in User entity.</li>
 
 </ul>
-<p>
-For more information about <b>database</b> visit  
-<a href="./docs/database.md">here</a>.<br>
-For more information about <b>architecture</b> visit  
-<a href="./docs/architecture.md">here</a>.
-
-</p>
