@@ -36,6 +36,15 @@ between some microservices
     <a href="./docs/architecture.md">here</a>.
 </p>
 
+<h2>Microservices documentation</h2>
+<ul>
+    <li>User microservice (<a href="./docs/user-service/overview.md">here</a>)</li>
+    <li>Auth microservice (<a href="./docs/auth-service/overview.md">here</a>)</li>
+    <li>Post microservice (<a href="./docs/post-service/overview.md">here</a>)</li>
+    <li>Notification microservice (<a href="./docs/notification-service/overview.md">here</a>)</li>
+    <li>API Gateway microservice (<a href="./docs/api-gateway-service/overview.md">here</a>)</li>
+</ul>
+
 <h3>Encountered problems</h3>
 <ul>
     <li><b>Problem</b>: <b>ClassCastException</b> exception when caching posts. <br>
