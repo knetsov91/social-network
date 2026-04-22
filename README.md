@@ -4,7 +4,7 @@
 
 A social network where users can create and like posts, follow each other, and chat in real time. Each core domain — users, authentication, posts, chat, and notifications — is implemented as an independent microservice and consumed by a React SPA through an API Gateway. Services communicate synchronously via REST and asynchronously via Kafka. Observability is provided by Prometheus and Grafana.
 
-#### Tech stack
+## Tech stack
 
 - Java 21
 - Spring Boot 3
