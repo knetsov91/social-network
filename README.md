@@ -39,6 +39,7 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 - User microservice ([here](./docs/user-service/overview.md))
 - Auth microservice ([here](./docs/auth-service/overview.md))
 - Post microservice ([here](./docs/post-service/overview.md))
+- Chat microservice ([here](./docs/chat-service/overview.md))
 - Notification microservice ([here](./docs/notification-service/overview.md))
 - API Gateway microservice ([here](./docs/api-gateway-service/overview.md))
 
