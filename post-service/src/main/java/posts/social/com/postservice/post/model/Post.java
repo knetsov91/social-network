@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,12 @@ public class Post {
     @Column(nullable = false)
     private UUID authorId;
 
-    @UpdateTimestamp
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="posts_likes", joinColumns = @JoinColumn(name="post_id"))
     @Column(name="user_id")
     private List<UUID> likes = new ArrayList<>();

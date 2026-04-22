@@ -20,7 +20,6 @@ import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
-import social.com.userservice.web.dto.ErrorResponse;
 import social.com.userservice.web.dto.GetAllUsersResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
@@ -43,16 +42,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-
-        if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setMessage("Passwords don't match");
-            errorResponse.setCode("400");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }
-        User user = userService.register(userRegisterRequest);
-
-        return ResponseEntity.ok(userRegisterRequest);
+        userService.register(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
@@ -71,7 +62,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(3600000)
+                .maxAge(3600)
                 .sameSite(SameSiteCookies.NONE.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
@@ -87,7 +78,11 @@ public class UserController {
 
     @GetMapping("/is-authenticated")
     public ResponseEntity<?> isAuthenticated(HttpServletRequest req) {
-        Optional<Cookie> token = Arrays.stream(req.getCookies()).filter(c -> c.getName().equals("token")).findFirst();
+        Cookie[] cookies = req.getCookies();
+        if (cookies == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Optional<Cookie> token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst();
 
         if (token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
