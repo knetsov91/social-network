@@ -37,7 +37,7 @@ public class Post {
 
     private LocalDateTime updatedAt;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="posts_likes", joinColumns = @JoinColumn(name="post_id"))
     @Column(name="user_id")
     private List<UUID> likes = new ArrayList<>();
