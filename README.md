@@ -26,6 +26,82 @@ A social network where users can create and like posts, follow each other, and c
 For more information about **database** visit [here](./docs/database.md).
 For more information about **architecture** visit [here](./docs/architecture.md).
 
+## Quick start (local)
+
+**Prerequisites:** Java 21, Docker
+
+**1. Start infrastructure**
+
+```bash
+cd infrastructure
+docker compose up -d
+```
+
+This starts PostgreSQL, MySQL, MongoDB, Kafka, Redis, and Vault.
+
+**2. Set required environment variables**
+
+```bash
+# Databases
+export POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+
+export MYSQL_USER=<MYSQL_USER>
+export MYSQL_PASSWORD=<MYSQL_PASSWORD>
+export MYSQL_DATABASE=<MYSQL_DATABASE>
+export MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>
+
+export MONGO_USERNAME=<MONGO_USERNAME>
+export MONGO_PASSWORD=<MONGO_PASSWORD>
+export MONGO_AUTH=<MONGO_AUTH>
+export MONGODB_HOST=<MONGODB_HOST>
+
+# Auth
+export JWT_KEY=<JWT_KEY>
+export JWT_SECRET_KEY=<JWT_SECRET_KEY>
+export JWT_EXP_TIME=<JWT_EXP_TIME>
+
+# Gateway TLS
+export KEY_STORE_PASSWORD=<KEY_STORE_PASSWORD>
+export WEBCLIENTJKS_KEY=<WEBCLIENTJKS_KEY>
+
+# Other
+export SERVICE_DISCOVERY_HOST=localhost:8761
+export FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
+export DB=<DB>
+export VAULT_TOKEN=<VAULT_TOKEN>
+```
+
+**3. Start services in order**
+
+```bash
+# 1 — service registry must be first
+cd service-discovery && ./gradlew bootRun
+
+# 2 — backend services (any order)
+cd user-service         && ./gradlew bootRun
+cd auth-service         && ./gradlew bootRun
+cd post-service         && ./gradlew bootRun
+cd chat-service         && ./gradlew bootRun
+cd notification-service && ./gradlew bootRun
+
+# 3 — gateway last
+cd api-gateway && ./gradlew bootRun
+```
+
+**4. (Optional) Start observability stack**
+
+```bash
+cd infrastructure/observabiity
+docker compose up -d   # Prometheus :9090, Grafana :3000
+```
+
+## Running tests
+
+```bash
+# From any service directory
+./gradlew test
+```
+
 ## Microservices documentation
 
 - User microservice ([here](./docs/user-service/overview.md))
