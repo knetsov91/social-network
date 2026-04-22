@@ -78,7 +78,11 @@ public class UserController {
 
     @GetMapping("/is-authenticated")
     public ResponseEntity<?> isAuthenticated(HttpServletRequest req) {
-        Optional<Cookie> token = Arrays.stream(req.getCookies()).filter(c -> c.getName().equals("token")).findFirst();
+        Cookie[] cookies = req.getCookies();
+        if (cookies == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Optional<Cookie> token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst();
 
         if (token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
