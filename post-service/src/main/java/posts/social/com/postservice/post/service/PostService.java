@@ -8,7 +8,6 @@ import posts.social.com.postservice.web.dto.PostCreateRequest;
 import posts.social.com.postservice.post.repository.PostRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,14 +32,8 @@ public class PostService {
     }
 
     public List<Post> getPosts(UUID authorId) {
-        Optional<List<Post>> posts = postRepository
-                .findByAuthorId(authorId);
-        
-        if (posts.isEmpty() || posts.get().isEmpty()) {
-            throw new RuntimeException("There are not posts for user with id: " + authorId);
-        }
-
-        return posts.get();
+        return postRepository.findByAuthorId(authorId)
+                .orElse(List.of());
     }
 
     public boolean postLikeExists(UUID postId, UUID userId) {
