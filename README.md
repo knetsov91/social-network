@@ -2,15 +2,7 @@
 
 ## Project overview
 
-Project implement social network where people can create, like posts chat with other people. Microservice architecture is used where
-main functionalities related to posts, users, authentication etc. are in separate projects.
-These services are consumed from front-end SPA application implemented using React UI Javascript library.
-For data persistence SQL and NoSQL databases are used i.e. MongoDb, PostgreSQL.
-JWT is used for authentication and authorization. Redis NoSQL datastore is used in some microservices
-as cache to offload pressure from the RDBMS. WebSocket protocol is used in some microservices for real-time communication.
-Observability is implemented by using Prometheus to collect and query
-metrics from microservices and Grafana for their visualization. Kafka is used for asynchronous communication
-between some microservices.
+A social network where users can create and like posts, follow each other, and chat in real time. Each core domain — users, authentication, posts, chat, and notifications — is implemented as an independent microservice and consumed by a React SPA through an API Gateway. Services communicate synchronously via REST and asynchronously via Kafka. Observability is provided by Prometheus and Grafana.
 
 #### Tech stack
 
