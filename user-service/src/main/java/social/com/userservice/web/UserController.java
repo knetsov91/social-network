@@ -20,7 +20,6 @@ import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
-import social.com.userservice.web.dto.ErrorResponse;
 import social.com.userservice.web.dto.GetAllUsersResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
@@ -43,16 +42,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-
-        if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setMessage("Passwords don't match");
-            errorResponse.setCode("400");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }
-        User user = userService.register(userRegisterRequest);
-
-        return ResponseEntity.ok(userRegisterRequest);
+        userService.register(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
