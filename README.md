@@ -17,10 +17,13 @@ between some microservices.
 - Java 21
 - Spring Boot 3
 - Spring Security 6
+- Spring Cloud (Gateway, Eureka)
 - React JS
 - PostgreSQL
+- MySQL
 - MongoDb
 - Redis
+- Apache Kafka
 - Docker
 - JUnit5
 - WebSocket
