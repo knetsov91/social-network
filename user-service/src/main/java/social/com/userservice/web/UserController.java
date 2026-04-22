@@ -71,7 +71,7 @@ public class UserController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(3600000)
+                .maxAge(3600)
                 .sameSite(SameSiteCookies.NONE.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
