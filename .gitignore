@@ -1,0 +1,20 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Runtime artifacts
+logs/
+
+# Keystores / certificates
+*.p12
+*.jks
+webclientstore
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
