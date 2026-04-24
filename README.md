@@ -41,34 +41,44 @@ This starts PostgreSQL, MySQL, MongoDB, Kafka, Redis, and Vault.
 
 **2. Set required environment variables**
 
+Create a `.env` file at the project root:
+
 ```bash
-# Databases
-export POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+# PostgreSQL (post-service)
+POSTGRES_USER=<POSTGRES_USER>
+POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+POSTGRES_DB=<POSTGRES_DB>
 
-export MYSQL_USER=<MYSQL_USER>
-export MYSQL_PASSWORD=<MYSQL_PASSWORD>
-export MYSQL_DATABASE=<MYSQL_DATABASE>
-export MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>
+# MySQL (user-service)
+MYSQL_USER=<MYSQL_USER>
+MYSQL_PASSWORD=<MYSQL_PASSWORD>
+MYSQL_DATABASE=<MYSQL_DATABASE>
+MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>
+DB=<DB>                     # must match MYSQL_DATABASE
 
-export MONGO_USERNAME=<MONGO_USERNAME>
-export MONGO_PASSWORD=<MONGO_PASSWORD>
-export MONGO_AUTH=<MONGO_AUTH>
-export MONGODB_HOST=<MONGODB_HOST>
+# MongoDB (chat-service)
+MONGODB_HOST=<MONGODB_HOST>
+MONGO_USERNAME=<MONGO_USERNAME>
+MONGO_PASSWORD=<MONGO_PASSWORD>
+MONGO_AUTH=<MONGO_AUTH>
 
-# Auth
-export JWT_KEY=<JWT_KEY>
-export JWT_SECRET_KEY=<JWT_SECRET_KEY>
-export JWT_EXP_TIME=<JWT_EXP_TIME>
+# Vault (post-service)
+VAULT_TOKEN=<VAULT_TOKEN>
 
-# Gateway TLS
-export KEY_STORE_PASSWORD=<KEY_STORE_PASSWORD>
-export WEBCLIENTJKS_KEY=<WEBCLIENTJKS_KEY>
+# JWT — auth-service signs, api-gateway validates; use the same base64-encoded secret for HMAC
+JWT_SECRET_KEY=<JWT_SECRET_KEY>
+JWT_KEY=<JWT_KEY>
+JWT_EXP_TIME=<JWT_EXP_TIME>
 
-# Other
-export SERVICE_DISCOVERY_HOST=localhost:8761
-export FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
-export DB=<DB>
-export VAULT_TOKEN=<VAULT_TOKEN>
+# TLS — must match the password of ko2.p12 (see step 3)
+KEY_STORE_PASSWORD=<KEY_STORE_PASSWORD>
+WEBCLIENTJKS_KEY=<WEBCLIENTJKS_KEY>
+
+# Service discovery — hostname only, port is appended automatically
+SERVICE_DISCOVERY_HOST=<SERVICE_DISCOVERY_HOST>
+
+# Frontend
+FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
 ```
 
 **3. Start services in order**
