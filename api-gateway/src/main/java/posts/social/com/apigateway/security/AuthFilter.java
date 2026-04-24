@@ -40,10 +40,18 @@ public class AuthFilter implements WebFilter, Ordered {
 
 
         HttpCookie token = exchange.getRequest().getCookies().getFirst("token");
-        if (token != null) {
-            authService.validateToken(token.getValue());
+        if (token == null) {
+            exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
         }
-        return chain.filter(exchange);
+
+        return authService.validateToken(token.getValue())
+                .then(chain.filter(exchange))
+                .onErrorResume(e -> {
+                    log.error("Token validation failed: {}", e.getMessage());
+                    exchange.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+                    return exchange.getResponse().setComplete();
+                });
 
     }
 }
