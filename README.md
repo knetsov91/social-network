@@ -101,7 +101,7 @@ cd api-gateway && ./gradlew bootRun
 **4. (Optional) Start observability stack**
 
 ```bash
-cd infrastructure/observabiity
+cd infrastructure/observability
 docker compose up -d   # Prometheus :9090, Grafana :3000
 ```
 
