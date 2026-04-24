@@ -1,11 +1,59 @@
 scrape_configs:
-  - job_name: "APIGateway"
+  - job_name: "api-gateway"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
-    # tls_config:
-    #   insecure_skip_verify: true
-    # scheme: https
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
     static_configs:
-      - targets: ["api_gateway:8085"]
+      - targets: ["localhost:8085"]
         labels:
-          application: "APIGateway"
+          application: "api-gateway"
+
+  - job_name: "auth-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8086"]
+        labels:
+          application: "auth-service"
+
+  - job_name: "user-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8087"]
+        labels:
+          application: "user-service"
+
+  - job_name: "post-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8088"]
+        labels:
+          application: "post-service"
+
+  - job_name: "chat-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8090"]
+        labels:
+          application: "chat-service"
+
+  - job_name: "notification-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8091"]
+        labels:
+          application: "notification-service"
+
+  - job_name: "service-discovery"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8092"]
+        labels:
+          application: "service-discovery"
