@@ -20,3 +20,14 @@ logging:
         security: DEBUG
 
 frontendUrl: http://localhost:5174/
+
+management:
+  server:
+    port: 8090
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
