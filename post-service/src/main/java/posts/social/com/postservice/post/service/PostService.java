@@ -8,6 +8,7 @@ import posts.social.com.postservice.web.dto.PostCreateRequest;
 import posts.social.com.postservice.post.repository.PostRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
