@@ -13,6 +13,13 @@ spring:
 server:
   port: 8089
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+      preferIpAddress: true
+
 logging:
   level:
     org:
@@ -22,8 +29,6 @@ logging:
 frontendUrl: http://localhost:5174/
 
 management:
-  server:
-    port: 8090
   endpoints:
     web:
       exposure:
