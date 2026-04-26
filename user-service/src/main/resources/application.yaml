@@ -52,8 +52,6 @@ frontend:
   url: http://localhost:5174
 
 management:
-  server:
-    port: 8087
   endpoints:
     web:
       exposure:

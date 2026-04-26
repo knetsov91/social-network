@@ -19,8 +19,6 @@ logging:
     org.springframework.messaging.simp: TRACE
 
 management:
-  server:
-    port: 8091
   endpoints:
     web:
       exposure:

@@ -43,8 +43,6 @@ logging:
     org.springframework.cloud.vault: info
 
 management:
-  server:
-    port: 8088
   endpoints:
     web:
       exposure:
