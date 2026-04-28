@@ -21,3 +21,7 @@ Path patterns use two wildcards:
 - `**` — matches **any number of segments** including nested paths (e.g. `/posts/123/likes`)
 
 The `/ws-endpoint/**` route uses **`lb:ws://`** instead of `lb://` — this tells the gateway to forward the request as a **WebSocket connection** rather than a standard HTTP request. The client performs a **WebSocket handshake** (HTTP Upgrade) and the gateway proxies the **persistent connection** through to notification-service.
+
+## Security
+
+For more information about security see [security](./security/security.md).
