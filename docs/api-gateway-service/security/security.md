@@ -1,11 +1,5 @@
-<h1 style="text-align: center">API Gateway security</h1>
+# API Gateway security
 
-<h2>Overview</h2>
-<p>Spring Security is used to protect endpoints that leads to microservices.
-Every request from client is checked if contains cookie with JWT and for protected endpoints.
-If JWT is present its validity is checked by making request to auth microservice.
-JWT is stored in secure HTTP-only cookie and it is transferred from client to this service
-via HTTPS.
-</p>
+## Overview
 
- 
+All requests entering the gateway pass through **`AuthFilter`** before being forwarded to any downstream service. The filter intercepts every request and delegates token validation to **auth-service**, which checks the token's signature, expiry, and blacklist.
