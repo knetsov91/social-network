@@ -17,3 +17,12 @@ logging:
     org.springframework.web.socket: DEBUG
     org.springframework.web.socket.server: TRACE
     org.springframework.messaging.simp: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always

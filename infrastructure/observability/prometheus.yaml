@@ -1,11 +1,94 @@
 scrape_configs:
-  - job_name: "APIGateway"
+  - job_name: "api-gateway"
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
-    # tls_config:
-    #   insecure_skip_verify: true
-    # scheme: https
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
     static_configs:
-      - targets: ["api_gateway:8085"]
+      - targets: ["localhost:8085"]
         labels:
-          application: "APIGateway"
+          application: "api-gateway"
+
+  - job_name: "auth-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    eureka_sd_configs:
+      - server: http://localhost:8761/eureka
+    relabel_configs:
+      - source_labels: [__meta_eureka_app_name]
+        regex: AUTH-SERVICE
+        action: keep
+      - source_labels: [__meta_eureka_app_instance_ip_addr, __meta_eureka_app_instance_port]
+        separator: ':'
+        target_label: __address__
+      - source_labels: [__meta_eureka_app_name]
+        target_label: application
+
+  - job_name: "user-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    eureka_sd_configs:
+      - server: http://localhost:8761/eureka
+    relabel_configs:
+      - source_labels: [__meta_eureka_app_name]
+        regex: USER-SERVICE
+        action: keep
+      - source_labels: [__meta_eureka_app_instance_ip_addr, __meta_eureka_app_instance_port]
+        separator: ':'
+        target_label: __address__
+      - source_labels: [__meta_eureka_app_name]
+        target_label: application
+
+  - job_name: "post-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    eureka_sd_configs:
+      - server: http://localhost:8761/eureka
+    relabel_configs:
+      - source_labels: [__meta_eureka_app_name]
+        regex: POST-SERVICE
+        action: keep
+      - source_labels: [__meta_eureka_app_instance_ip_addr, __meta_eureka_app_instance_port]
+        separator: ':'
+        target_label: __address__
+      - source_labels: [__meta_eureka_app_name]
+        target_label: application
+
+  - job_name: "notification-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    eureka_sd_configs:
+      - server: http://localhost:8761/eureka
+    relabel_configs:
+      - source_labels: [__meta_eureka_app_name]
+        regex: NOTIFICATION-SERVICE
+        action: keep
+      - source_labels: [__meta_eureka_app_instance_ip_addr, __meta_eureka_app_instance_port]
+        separator: ':'
+        target_label: __address__
+      - source_labels: [__meta_eureka_app_name]
+        target_label: application
+
+  - job_name: "chat-service"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    eureka_sd_configs:
+      - server: http://localhost:8761/eureka
+    relabel_configs:
+      - source_labels: [__meta_eureka_app_name]
+        regex: CHAT-SERVICE
+        action: keep
+      - source_labels: [__meta_eureka_app_instance_ip_addr, __meta_eureka_app_instance_port]
+        separator: ':'
+        target_label: __address__
+      - source_labels: [__meta_eureka_app_name]
+        target_label: application
+
+  - job_name: "service-discovery"
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:8761"]
+        labels:
+          application: "service-discovery"
