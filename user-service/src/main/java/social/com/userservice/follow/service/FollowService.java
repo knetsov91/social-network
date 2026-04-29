@@ -31,6 +31,7 @@ public class FollowService {
         followRepository.save(follow);
     }
 
+    @Cacheable(value = "followings", key = "#userId")
     public List<UUID> getUserFollowings(UUID userId) {
         return followRepository.findByFollowerId(userId)
                 .orElse(List.of())
