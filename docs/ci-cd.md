@@ -3,3 +3,10 @@
 ## Overview
 
 CI is handled by **GitHub Actions**. Each microservice has its own workflow that triggers only when files in its directory change — unrelated services are not rebuilt. All workflows share a single reusable build definition to avoid duplication.
+
+## Workflow Structure
+
+The CI setup consists of two types of workflow files:
+
+- **`_gradle-build.yml`** — reusable workflow that contains the build and test steps. Called by all per-service workflows.
+- **`ci-<service>.yml`** — one file per service. Defines the trigger (branches and path filter) and calls the reusable workflow with the service name.
