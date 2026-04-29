@@ -43,8 +43,10 @@ type(scope): description
 | `fix` | bug fix |
 | `docs` | README or docs folder changes |
 | `refactor` | code change with no behavior change |
+| `perf` | performance optimization with no behavior change |
 | `test` | adding or fixing tests |
 | `chore` | build, infrastructure, configuration |
+| `ci` | CI/CD pipeline changes |
 | `style` | formatting only |
 
 **Scopes** match service or area names: `user-service`, `post-service`, `auth-service`, `chat-service`, `notification-service`, `api-gateway`, `infrastructure`, `readme`.
