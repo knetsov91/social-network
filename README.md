@@ -70,7 +70,7 @@ JWT_SECRET_KEY=<JWT_SECRET_KEY>
 JWT_KEY=<JWT_KEY>
 JWT_EXP_TIME=<JWT_EXP_TIME>
 
-# TLS — must match the password of ko2.p12 (see step 3)
+# TLS — must match the password of the PKCS12 keystore used by api-gateway
 KEY_STORE_PASSWORD=<KEY_STORE_PASSWORD>
 WEBCLIENTJKS_KEY=<WEBCLIENTJKS_KEY>
 
