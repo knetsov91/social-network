@@ -10,3 +10,12 @@ The CI setup consists of two types of workflow files:
 
 - **`_gradle-build.yml`** — reusable workflow that contains the build and test steps. Called by all per-service workflows.
 - **`ci-<service>.yml`** — one file per service. Defines the trigger (branches and path filter) and calls the reusable workflow with the service name.
+
+## Triggers
+
+Each per-service workflow triggers on:
+
+- **Push** to `main` or `dev` — when files inside the service directory change
+- **Pull request** targeting `main` or `dev` — when the PR diff touches the service directory
+
+Changes outside a service directory (e.g. docs, infrastructure) do not trigger any build.
