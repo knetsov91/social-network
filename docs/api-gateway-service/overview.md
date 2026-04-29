@@ -1,9 +1,12 @@
-<h1 style="text-align: center">API Gateway microservice</h1>
+# API Gateway microservice
 
-<h2>Overview</h2>
-<p>This microservice is used as entry point to the application. It is used for routing request made by clients(frontend, etc.) to
-different microservice. Implemented using Spring Cloud API Gateway which uses WebFlux reactive streams.
-In order to locate microservice for which the request is intended this microservice communicate with
-service discovery microservice.
-Every other microservice is register to it in order to be discovered by API Gateway microservice.  
-</p>
+## Overview
+
+The API Gateway is the single entry point for all client requests. It runs on port **8085** over HTTPS and is responsible for routing, authentication, and CORS handling.
+
+Built with Spring Cloud Gateway (WebFlux/reactive). Routes are resolved via Netflix Eureka service discovery — each downstream service registers itself, and the gateway uses client-side load balancing to forward requests. When multiple instances of a service are registered, requests are distributed between them using round-robin.
+
+## More information
+
+- [Routes](./routes/routes.md)
+- [Security](./security/security.md)
