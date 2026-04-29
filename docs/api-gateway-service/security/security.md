@@ -34,3 +34,9 @@ Authentication is **cookie-based** — the JWT is stored in an **`HttpOnly`** co
 The cookie is named **`token`**, is **`HttpOnly`** (not accessible via JavaScript), **`Secure`** (HTTPS only), **`SameSite=None`** (allows cross-origin requests from the frontend), and expires after **1 hour**.
 
 The cookie is **set by user-service** on successful login. The gateway reads it from every subsequent request in **`AuthFilter`** and passes the value to **auth-service** for validation.
+
+## Transport Security
+
+The gateway runs exclusively over **HTTPS** on port **8085**. A **PKCS12** keystore is used to serve the TLS certificate. The keystore password is configured via the **`KEY_STORE_PASSWORD`** environment variable.
+
+Downstream services are called over **HTTP** — TLS terminates at the gateway.
