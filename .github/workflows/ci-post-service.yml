@@ -1,0 +1,15 @@
+name: CI — post-service
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['post-service/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['post-service/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: post-service

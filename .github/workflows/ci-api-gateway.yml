@@ -1,0 +1,15 @@
+name: CI — api-gateway
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['api-gateway/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['api-gateway/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: api-gateway

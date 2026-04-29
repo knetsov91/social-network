@@ -1,0 +1,15 @@
+name: CI — notification-service
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['notification-service/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['notification-service/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: notification-service
