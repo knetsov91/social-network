@@ -1,0 +1,15 @@
+name: CI — service-discovery
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['service-discovery/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['service-discovery/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: service-discovery
