@@ -1,0 +1,15 @@
+name: CI — chat-service
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['chat-service/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['chat-service/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: chat-service
