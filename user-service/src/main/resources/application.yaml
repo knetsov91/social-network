@@ -19,6 +19,11 @@ spring:
             password: ${KEY_STORE_PASSWORD}
             type: PKCS12
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
   jpa:
     show-sql: true
 
