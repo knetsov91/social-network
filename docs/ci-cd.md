@@ -19,3 +19,14 @@ Each per-service workflow triggers on:
 - **Pull request** targeting `main` or `dev` — when the PR diff touches the service directory
 
 Changes outside a service directory (e.g. docs, infrastructure) do not trigger any build.
+
+## Build Steps
+
+The reusable workflow runs the following steps for each service:
+
+1. **Checkout** — fetches the repository
+2. **Set up Java 21** — uses the Temurin distribution with Gradle dependency caching enabled
+3. **Build** — compiles and packages the service (`./gradlew build -x test`)
+4. **Unit tests** — runs unit tests only
+
+Integration tests are excluded — they require real databases and are not yet wired up in CI.
