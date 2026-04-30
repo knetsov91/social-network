@@ -174,3 +174,6 @@ All other endpoints require a valid `token` cookie.
 
 - **Problem**: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found]".
   **Solution**: Use `spring.jpa.database-platform=org.hibernate.dialect.H2Dialect` instead of `spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect` in properties.yaml used for testing and use `@Table(name="`user`")` in User entity.
+
+- **Problem**: Environment variables from `.env` are not visible to services started with `./gradlew bootRun` — Spring fails to resolve placeholders like `${KEY_STORE_PASSWORD}`.
+  **Solution**: Source the `.env` file with `set -a` so all variables are automatically exported to child processes: `set -a && source .env && set +a`.
