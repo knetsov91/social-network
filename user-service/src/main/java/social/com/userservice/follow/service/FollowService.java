@@ -1,5 +1,7 @@
 package social.com.userservice.follow.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import social.com.userservice.common.TimeProvider;
 import social.com.userservice.follow.model.Follow;
@@ -18,6 +20,7 @@ public class FollowService {
         this.timeProvider = timeProvider;
     }
 
+    @CacheEvict(value = "followings", key = "#followerId")
     public void follow(UUID followerId, UUID followeeId) {
 
         Follow follow = new Follow();
@@ -28,6 +31,7 @@ public class FollowService {
         followRepository.save(follow);
     }
 
+    @Cacheable(value = "followings", key = "#userId")
     public List<UUID> getUserFollowings(UUID userId) {
         return followRepository.findByFollowerId(userId)
                 .orElse(List.of())

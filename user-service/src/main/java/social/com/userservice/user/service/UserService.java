@@ -1,5 +1,7 @@
 package social.com.userservice.user.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import social.com.userservice.user.model.User;
@@ -21,6 +23,7 @@ public class UserService{
         this.passwordEncoder = passwordEncoder;
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public User register(UserRegisterRequest userRegisterRequest) {
 
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
@@ -40,6 +43,7 @@ public class UserService{
         return userRepository.save(user);
     }
 
+    @Cacheable("users")
     public List<User> getAll() {
         return userRepository.findAll();
     }
