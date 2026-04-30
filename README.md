@@ -83,6 +83,8 @@ FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
 
 **3. Start services in order**
 
+> Make sure environment variables are exported before starting services — see **Encountered problems** section.
+
 ```bash
 # 1 — service registry must be first
 cd service-discovery && ./gradlew bootRun
