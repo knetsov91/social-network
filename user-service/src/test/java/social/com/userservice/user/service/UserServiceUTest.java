@@ -13,6 +13,7 @@ import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -91,7 +92,7 @@ class UserServiceUTest {
         when(passwordEncoder.encode("Secret123")).thenReturn("EncodedSecret");
 
         User saved = new User();
-        saved.setId(1L);
+        saved.setId(UUID.randomUUID());
         saved.setUsername("newUser");
         saved.setPassword("EncodedSecret");
         saved.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
