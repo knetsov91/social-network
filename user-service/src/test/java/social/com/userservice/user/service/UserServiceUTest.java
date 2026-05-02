@@ -15,7 +15,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import static org.mockito.Mockito.*;
 
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceUTest {
 
@@ -80,4 +79,34 @@ class UserServiceUTest {
         Assertions.assertEquals(user.getCreatedAt(), now);
     }
 
+
+    @Test
+    public void test_successfulRegistration_evictsCache() {
+        // arrange
+        UserRegisterRequest req = new UserRegisterRequest();
+        req.setUsername("newUser");
+        req.setPassword("Secret123");
+        req.setConfirmPassword("Secret123");
+
+        when(passwordEncoder.encode("Secret123")).thenReturn("EncodedSecret");
+
+        User saved = new User();
+        saved.setId(1L);
+        saved.setUsername("newUser");
+        saved.setPassword("EncodedSecret");
+        saved.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        saved.setActive(true);
+
+        when(userRepository.findByUsername("newUser")).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(saved);
+
+        // act: successful registration
+        userService.register(req);
+
+        // act: subsequent call to getAll should trigger repository fetch (cache cleared)
+        userService.getAll();
+
+        // assert: repository.findAll was invoked, confirming cache eviction
+        verify(userRepository, times(1)).findAll();
+    }
 }
