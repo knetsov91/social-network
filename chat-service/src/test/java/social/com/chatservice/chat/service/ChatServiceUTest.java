@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,5 +40,14 @@ class ChatServiceUTest {
         List<Chat> result = chatService.getUserChats(userId);
 
         assertEquals(List.of(chat1, chat2), result);
+    }
+
+    @Test
+    void test_getUserChats_whenNotFound_thenThrowException() {
+        UUID userId = UUID.randomUUID();
+
+        when(chatRepository.findByParticipantsContains(userId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> chatService.getUserChats(userId));
     }
 }
