@@ -69,4 +69,18 @@ class ChatServiceUTest {
 
         assertEquals(List.of(participant1, participant2), captor.getValue().getParticipants());
     }
+
+    @Test
+    void test_getChatById_happyPath() {
+        String chatId = "chat-123";
+
+        Chat chat = new Chat();
+        chat.setParticipants(List.of(UUID.randomUUID()));
+
+        when(chatRepository.findById(chatId)).thenReturn(Optional.of(chat));
+
+        Chat result = chatService.getChatById(chatId);
+
+        assertEquals(chat, result);
+    }
 }
