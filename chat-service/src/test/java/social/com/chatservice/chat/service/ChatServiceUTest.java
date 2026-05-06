@@ -83,4 +83,13 @@ class ChatServiceUTest {
 
         assertEquals(chat, result);
     }
+
+    @Test
+    void test_getChatById_whenNotFound_thenThrowException() {
+        String chatId = "chat-123";
+
+        when(chatRepository.findById(chatId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> chatService.getChatById(chatId));
+    }
 }
