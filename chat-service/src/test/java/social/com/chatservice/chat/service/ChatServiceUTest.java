@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
+import social.com.chatservice.message.model.Message;
 import social.com.chatservice.web.dto.CreateChatRequest;
 
 import java.util.List;
@@ -91,5 +92,28 @@ class ChatServiceUTest {
         when(chatRepository.findById(chatId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> chatService.getChatById(chatId));
+    }
+
+    @Test
+    void test_addMessageToChat_happyPath() {
+        String chatId = "chat-123";
+
+        Chat chat = new Chat();
+        chat.setParticipants(List.of(UUID.randomUUID()));
+
+        Message message = Message.builder()
+                .text("hello")
+                .senderId(UUID.randomUUID())
+                .receiverId(UUID.randomUUID())
+                .build();
+
+        when(chatRepository.findById(chatId)).thenReturn(Optional.of(chat));
+
+        chatService.addMessageToChat(chatId, message);
+
+        ArgumentCaptor<Chat> captor = ArgumentCaptor.forClass(Chat.class);
+        verify(chatRepository).save(captor.capture());
+
+        assertEquals(List.of(message), captor.getValue().getMessages());
     }
 }
