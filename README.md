@@ -179,3 +179,6 @@ All other endpoints require a valid `token` cookie.
 
 - **Problem**: Environment variables from `.env` are not visible to services started with `./gradlew bootRun` — Spring fails to resolve placeholders like `${KEY_STORE_PASSWORD}`.
   **Solution**: Source the `.env` file with `set -a` so all variables are automatically exported to child processes: `set -a && source .env && set +a`.
+
+- **Problem**: CORS preflight (`OPTIONS`) requests to the API Gateway return 403 with `Access-Control-Allow-Origin` header missing.
+  **Solution**: Define an explicit `CorsConfigurationSource` bean in `SecurityConfig`. Without it, Spring Security's `.cors(Customizer.withDefaults())` has nothing to bind its `CorsWebFilter` to, so preflight requests fall through to the router and get forwarded downstream without CORS headers. Also, add an `OPTIONS` method check at the top of `AuthFilter` to skip token validation for preflight requests — browsers send `OPTIONS` without cookies, so without this check preflights on protected routes are rejected with 401 before CORS headers can be added.
