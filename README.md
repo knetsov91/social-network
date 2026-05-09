@@ -46,6 +46,7 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | Vault | 8200 | Secrets management |
 | Prometheus | 9090 | Metrics collection (observability stack) |
 | Grafana | 3000 | Metrics dashboards (observability stack) |
+| Jaeger | 16686 | Distributed tracing UI (observability stack) |
 
 ## Quick start (local)
 
