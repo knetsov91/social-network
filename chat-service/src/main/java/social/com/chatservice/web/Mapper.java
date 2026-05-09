@@ -12,6 +12,7 @@ public class Mapper {
     public static ChatResponse mapChatToChatResponse(Chat chat) {
         ChatResponse chatResponse = new ChatResponse();
         chatResponse.setId(chat.getId());
+        chatResponse.setCreatedBy(chat.getCreatedBy());
         chatResponse.setParticipants(chat.getParticipants());
         chatResponse.setCreatedAt(chat.getCreatedAt());
         chatResponse.setUpdatedAt(chat.getUpdatedAt());
