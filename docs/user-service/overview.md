@@ -8,7 +8,7 @@ This service is implemented following REST API architecture style using Spring W
 
 Redis is used to cache two read-heavy queries:
 
-- **All users list** — cached on `GET /users/all`, evicted when a new user registers
+- **All users list** — cached on `GET /users`, evicted when a new user registers
 - **User followings** — cached per user, evicted when that user follows someone
 
 Cache entries expire after **10 minutes**.

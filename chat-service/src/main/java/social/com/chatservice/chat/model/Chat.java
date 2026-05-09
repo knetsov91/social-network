@@ -17,6 +17,8 @@ public class Chat {
     @Id
     private String id;
 
+    private UUID createdBy;
+
     private List<UUID> participants;
 
     private LocalDateTime createdAt;

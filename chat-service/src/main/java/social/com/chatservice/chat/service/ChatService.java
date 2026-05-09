@@ -25,6 +25,7 @@ public class ChatService {
 
     public void createChat(CreateChatRequest createChatRequest) {
         Chat chat = new Chat();
+        chat.setCreatedBy(createChatRequest.getCreatedBy());
         chat.setParticipants(createChatRequest.getParticipants());
         chat.setCreatedAt(LocalDateTime.now());
         chat.setUpdatedAt(LocalDateTime.now());

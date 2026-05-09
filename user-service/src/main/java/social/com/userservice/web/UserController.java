@@ -21,6 +21,7 @@ import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
 import social.com.userservice.web.dto.GetAllUsersResponse;
+import social.com.userservice.web.dto.LoginResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.util.Arrays;
@@ -66,10 +67,10 @@ public class UserController {
                 .sameSite(SameSiteCookies.NONE.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<List<GetAllUsersResponse>> getAllUsers() {
         List<User> users = userService.getAll();
         List<GetAllUsersResponse> getAllUsersResponses = Mapper.mapUsersToGetAllUsersResponse(users);

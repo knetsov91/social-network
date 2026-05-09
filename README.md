@@ -26,6 +26,28 @@ A social network where users can create and like posts, follow each other, and c
 For more information about **database** visit [here](./docs/database.md).
 For more information about **architecture** visit [here](./docs/architecture.md).
 
+## Services & Ports
+
+| Service | Port | Description |
+|---|---|---|
+| api-gateway | 8085 | Entry point for all client requests; handles TLS termination, routing, and JWT validation |
+| service-discovery | 8761 | Eureka server; all microservices register here for load-balanced routing |
+| user-service | dynamic | Manages user registration, login, and follow relationships |
+| auth-service | dynamic | Issues and validates JWT tokens; maintains a token blacklist |
+| post-service | dynamic | Handles post creation, retrieval, and likes |
+| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is not yet routed through the gateway (to be fixed) |
+| notification-service | dynamic | Consumes Kafka events and pushes real-time notifications over WebSocket |
+| PostgreSQL | 5432 | Relational database for post-service |
+| MySQL | 3306 | Relational database for user-service |
+| MongoDB | 27017 | NoSQL (Document) database for chat-service |
+| Redis | 6379 | In-memory key-value store |
+| Redis Insight | 8001 | Web UI for inspecting Redis data |
+| Kafka | 9092 | Async event bus |
+| Vault | 8200 | Secrets management |
+| Prometheus | 9090 | Metrics collection (observability stack) |
+| Grafana | 3000 | Metrics dashboards (observability stack) |
+| Jaeger | 16686 | Distributed tracing UI (observability stack) |
+
 ## Quick start (local)
 
 **Prerequisites:** Java 21, Docker
