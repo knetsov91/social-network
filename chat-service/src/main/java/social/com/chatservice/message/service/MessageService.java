@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import social.com.chatservice.chat.service.ChatService;
 import social.com.chatservice.message.model.Message;
 import social.com.chatservice.message.repository.MessageRepository;
+import social.com.chatservice.web.Mapper;
 import social.com.chatservice.web.dto.CreateMessageRequest;
+import social.com.chatservice.web.dto.MessageResponse;
 import java.time.LocalDateTime;
 
 @Service
@@ -18,16 +20,17 @@ public class MessageService {
         this.chatService = chatService;
     }
 
-    public void createMessage(CreateMessageRequest createMessageRequest) {
-        Message build = Message.builder()
+    public MessageResponse createMessage(CreateMessageRequest createMessageRequest) {
+        Message message = Message.builder()
                 .text(createMessageRequest.getText())
                 .senderId(createMessageRequest.getSenderId())
                 .receiverId(createMessageRequest.getReceiverId())
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        Message message = messageRepository.save(build);
+        Message saved = messageRepository.save(message);
+        chatService.addMessageToChat(createMessageRequest.getChatId(), saved);
 
-        chatService.addMessageToChat(createMessageRequest.getChatId(), message);
+        return Mapper.mapMessageToMessageResponse(saved);
     }
 }
