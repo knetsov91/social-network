@@ -9,7 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
 import social.com.chatservice.message.model.Message;
+import social.com.chatservice.user.client.UserClient;
+import social.com.chatservice.user.client.dto.UserResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import social.com.chatservice.web.dto.UserChatResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,21 +32,28 @@ class ChatServiceUTest {
     @Mock
     private ChatRepository chatRepository;
 
+    @Mock
+    private UserClient userClient;
+
     @Test
     void test_getUserChats_happyPath() {
         UUID userId = UUID.randomUUID();
+        UUID participantId = UUID.randomUUID();
 
-        Chat chat1 = new Chat();
-        chat1.setParticipants(List.of(userId));
+        Chat chat = new Chat();
+        chat.setId("chat-123");
+        chat.setCreatedBy(userId);
+        chat.setParticipants(List.of(participantId));
 
-        Chat chat2 = new Chat();
-        chat2.setParticipants(List.of(userId));
+        when(chatRepository.findByParticipantsContains(userId)).thenReturn(Optional.of(List.of(chat)));
+        when(userClient.getUserById(participantId)).thenReturn(new UserResponse(participantId, "test-user"));
 
-        when(chatRepository.findByParticipantsContains(userId)).thenReturn(Optional.of(List.of(chat1, chat2)));
+        List<UserChatResponse> result = chatService.getUserChats(userId);
 
-        List<Chat> result = chatService.getUserChats(userId);
-
-        assertEquals(List.of(chat1, chat2), result);
+        assertEquals(1, result.size());
+        assertEquals("chat-123", result.get(0).getChatId());
+        assertEquals(userId, result.get(0).getCreatedBy());
+        assertEquals(List.of("test-user"), result.get(0).getParticipantUsernames());
     }
 
     @Test
@@ -57,18 +67,20 @@ class ChatServiceUTest {
 
     @Test
     void test_createChat_happyPath() {
-        UUID participant1 = UUID.randomUUID();
-        UUID participant2 = UUID.randomUUID();
+        UUID createdBy = UUID.randomUUID();
+        UUID participant = UUID.randomUUID();
 
         CreateChatRequest request = new CreateChatRequest();
-        request.setParticipants(List.of(participant1, participant2));
+        request.setCreatedBy(createdBy);
+        request.setParticipants(List.of(participant));
 
         chatService.createChat(request);
 
         ArgumentCaptor<Chat> captor = ArgumentCaptor.forClass(Chat.class);
         verify(chatRepository).save(captor.capture());
 
-        assertEquals(List.of(participant1, participant2), captor.getValue().getParticipants());
+        assertEquals(createdBy, captor.getValue().getCreatedBy());
+        assertEquals(List.of(participant), captor.getValue().getParticipants());
     }
 
     @Test
