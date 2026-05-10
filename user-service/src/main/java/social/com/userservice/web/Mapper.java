@@ -2,7 +2,7 @@ package social.com.userservice.web;
 
 import social.com.userservice.auth.client.dto.TokenIssueRequest;
 import social.com.userservice.user.model.User;
-import social.com.userservice.web.dto.GetAllUsersResponse;
+import social.com.userservice.web.dto.UserResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +16,10 @@ public class Mapper {
         return tokenIssueRequest;
     }
 
-    public static List<GetAllUsersResponse> mapUsersToGetAllUsersResponse(List<User> users) {
-        List<GetAllUsersResponse> usersResponse = new ArrayList<>();
+    public static List<UserResponse> mapUsersToUserResponse(List<User> users) {
+        List<UserResponse> usersResponse = new ArrayList<>();
         for (User user : users) {
-            GetAllUsersResponse userResponse = new GetAllUsersResponse(user.getId(), user.getUsername());
+            UserResponse userResponse = new UserResponse(user.getId(), user.getUsername());
             usersResponse.add(userResponse);
         }
 
