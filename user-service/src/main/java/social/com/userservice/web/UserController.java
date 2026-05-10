@@ -20,13 +20,14 @@ import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
-import social.com.userservice.web.dto.GetAllUsersResponse;
+import social.com.userservice.web.dto.UserResponse;
 import social.com.userservice.web.dto.LoginResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -71,10 +72,15 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetAllUsersResponse>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = userService.getAll();
-        List<GetAllUsersResponse> getAllUsersResponses = Mapper.mapUsersToGetAllUsersResponse(users);
-        return ResponseEntity.ok(getAllUsersResponses);
+        return ResponseEntity.ok(Mapper.mapUsersToUserResponse(users));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
+        User user = userService.getById(id);
+        return ResponseEntity.ok(new UserResponse(user.getId(), user.getUsername()));
     }
 
     @GetMapping("/is-authenticated")
