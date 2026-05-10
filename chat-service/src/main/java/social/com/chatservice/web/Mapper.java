@@ -1,6 +1,7 @@
 package social.com.chatservice.web;
 
 import social.com.chatservice.chat.model.Chat;
+import social.com.chatservice.message.model.Message;
 import social.com.chatservice.web.dto.ChatResponse;
 import social.com.chatservice.web.dto.MessageResponse;
 
@@ -18,20 +19,20 @@ public class Mapper {
         chatResponse.setUpdatedAt(chat.getUpdatedAt());
 
         List<MessageResponse> messageResponses = new ArrayList<>();
-
-        chat.getMessages().forEach(message -> {
-            MessageResponse messageResponse = new MessageResponse();
-            messageResponse.setId(message.getId());
-            messageResponse.setText(message.getText());
-            messageResponse.setCreatedAt(message.getCreatedAt());
-            messageResponse.setUpdatedAt(message.getUpdatedAt());
-            messageResponse.setSenderId(message.getSenderId());
-            messageResponse.setReceiverId(message.getReceiverId());
-            messageResponses.add(messageResponse);
-        });
-
+        chat.getMessages().forEach(message -> messageResponses.add(mapMessageToMessageResponse(message)));
         chatResponse.setMessages(messageResponses);
 
         return chatResponse;
+    }
+
+    public static MessageResponse mapMessageToMessageResponse(Message message) {
+        MessageResponse response = new MessageResponse();
+        response.setId(message.getId());
+        response.setText(message.getText());
+        response.setSenderId(message.getSenderId());
+        response.setReceiverId(message.getReceiverId());
+        response.setCreatedAt(message.getCreatedAt());
+        response.setUpdatedAt(message.getUpdatedAt());
+        return response;
     }
 }
