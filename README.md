@@ -210,3 +210,6 @@ All other endpoints require a valid `token` cookie.
 
 - **Problem**: After a service restart, `GET /api/v1/users` returns 400 with "Unrecognized field 'enabled'" when the response is served from Redis cache.
   **Solution**: Add `@JsonIgnore` to all `UserDetails` interface methods (`isEnabled`, `isAccountNonExpired`, `isAccountNonLocked`, `isCredentialsNonExpired`, `getAuthorities`) in the `User` entity. These methods are serialized by Jackson as fields when caching but have no corresponding setters to deserialize back into, causing the mismatch. Adding setters would also fix deserialization but is the wrong approach — these are Spring Security interface methods that do not belong to the domain model, so caching them is redundant. `@JsonIgnore` prevents them from being cached at all.
+
+- **Problem**: Frontend cannot read 401 responses from the API Gateway on cross-origin requests — the browser blocks the response even though the status code is returned correctly.
+  **Solution**: Add `Access-Control-Allow-Origin` and `Access-Control-Allow-Credentials` CORS headers to 401 responses in `AuthFilter`. Any cross-origin request sent with credentials (cookies, Authorization header) requires these headers on every response, including error responses, for the browser to expose them to frontend JavaScript.
