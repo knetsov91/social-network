@@ -47,4 +47,9 @@ public class UserService{
     public List<User> getAll() {
         return userRepository.findAll();
     }
+
+    public User getById(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User with id " + id + " not found"));
+    }
 }
