@@ -2,5 +2,5 @@ package social.com.userservice.web.dto;
 
 import java.util.UUID;
 
-public record GetAllUsersResponse(UUID userId, String username) {
+public record UserResponse(UUID userId, String username) {
 }
