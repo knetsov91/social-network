@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import social.com.chatservice.message.service.MessageService;
 import social.com.chatservice.web.dto.CreateMessageRequest;
+import social.com.chatservice.web.dto.MessageResponse;
 
 @RestController
 @RequestMapping("/api/v1/messages")
@@ -20,9 +21,8 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity createMessage(@RequestBody CreateMessageRequest createMessageRequest) {
-        messageService.createMessage(createMessageRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<MessageResponse> createMessage(@RequestBody CreateMessageRequest createMessageRequest) {
+        MessageResponse response = messageService.createMessage(createMessageRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
 }
