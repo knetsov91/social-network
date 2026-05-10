@@ -8,6 +8,7 @@ import social.com.chatservice.chat.repository.ChatRepository;
 import social.com.chatservice.chat.service.ChatService;
 import social.com.chatservice.web.dto.ChatResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import social.com.chatservice.web.dto.UserChatResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +33,8 @@ public class ChatController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<?> getUserChats(@PathVariable UUID userId) {
-        List<Chat> chats = chatService.getUserChats(userId);
+    public ResponseEntity<List<UserChatResponse>> getUserChats(@PathVariable UUID userId) {
+        List<UserChatResponse> chats = chatService.getUserChats(userId);
         return ResponseEntity.ok(chats);
     }
 
