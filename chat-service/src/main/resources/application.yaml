@@ -26,7 +26,7 @@ logging:
       springframework:
         security: DEBUG
 
-frontendUrl: http://localhost:5174/
+frontendUrl: http://localhost:5173
 
 management:
   endpoints:
