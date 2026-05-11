@@ -8,6 +8,8 @@ import social.com.chatservice.web.Mapper;
 import social.com.chatservice.web.dto.CreateMessageRequest;
 import social.com.chatservice.web.dto.MessageResponse;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -18,6 +20,12 @@ public class MessageService {
     public MessageService(MessageRepository messageRepository, ChatService chatService) {
         this.messageRepository = messageRepository;
         this.chatService = chatService;
+    }
+
+    public List<MessageResponse> getMessagesByChatId(String chatId) {
+        return chatService.getChatById(chatId).getMessages().stream()
+                .map(Mapper::mapMessageToMessageResponse)
+                .collect(Collectors.toList());
     }
 
     public MessageResponse createMessage(CreateMessageRequest createMessageRequest) {
