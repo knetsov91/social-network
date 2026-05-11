@@ -61,4 +61,13 @@ class MessageServiceUTest {
         assertEquals(receiverId, result.get(0).getReceiverId());
         assertEquals(now, result.get(0).getCreatedAt());
     }
+
+    @Test
+    void test_getMessagesByChatId_whenChatNotFound_thenThrowException() {
+        String chatId = "chat-123";
+
+        when(chatService.getChatById(chatId)).thenThrow(new RuntimeException("Chat not found"));
+
+        assertThrows(RuntimeException.class, () -> messageService.getMessagesByChatId(chatId));
+    }
 }
