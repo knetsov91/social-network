@@ -12,6 +12,7 @@ import social.com.chatservice.message.model.Message;
 import social.com.chatservice.user.client.UserClient;
 import social.com.chatservice.user.client.dto.UserResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import social.com.chatservice.web.dto.ParticipantResponse;
 import social.com.chatservice.web.dto.UserChatResponse;
 
 import java.util.List;
@@ -53,7 +54,10 @@ class ChatServiceUTest {
         assertEquals(1, result.size());
         assertEquals("chat-123", result.get(0).getChatId());
         assertEquals(userId, result.get(0).getCreatedBy());
-        assertEquals(List.of("test-user"), result.get(0).getParticipantUsernames());
+        ParticipantResponse expectedParticipant = new ParticipantResponse();
+        expectedParticipant.setId(participantId);
+        expectedParticipant.setUsername("test-user");
+        assertEquals(List.of(expectedParticipant), result.get(0).getParticipants());
     }
 
     @Test
