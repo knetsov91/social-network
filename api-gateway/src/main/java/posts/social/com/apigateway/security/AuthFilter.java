@@ -32,7 +32,8 @@ public class AuthFilter implements WebFilter, Ordered {
             "/api/v1/users",
             "/api/v1/users/*",
             "/api/v1/tokens/**",
-            "/actuator/**"
+            "/actuator/**",
+            "/ws-chat/**"
     ).stream().map(new PathPatternParser()::parse).toList();
     private AuthService authService;
 
