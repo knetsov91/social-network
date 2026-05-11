@@ -11,7 +11,7 @@ public class UserChatResponse {
 
     private String chatId;
     private UUID createdBy;
-    private List<String> participantUsernames;
+    private List<ParticipantResponse> participants;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

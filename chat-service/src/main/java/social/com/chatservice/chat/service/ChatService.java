@@ -7,6 +7,7 @@ import social.com.chatservice.message.model.Message;
 import social.com.chatservice.user.client.UserClient;
 import social.com.chatservice.user.client.dto.UserResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import social.com.chatservice.web.dto.ParticipantResponse;
 import social.com.chatservice.web.dto.UserChatResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,17 +30,20 @@ public class ChatService {
                 .orElseThrow(() -> new RuntimeException("User with id " + userId + " not found"));
 
         return chats.stream().map(chat -> {
-            List<String> usernames = chat.getParticipants().stream()
+            List<ParticipantResponse> participants = chat.getParticipants().stream()
                     .map(participantId -> {
                         UserResponse user = userClient.getUserById(participantId);
-                        return user.username();
+                        ParticipantResponse participant = new ParticipantResponse();
+                        participant.setId(user.userId());
+                        participant.setUsername(user.username());
+                        return participant;
                     })
                     .collect(Collectors.toList());
 
             UserChatResponse response = new UserChatResponse();
             response.setChatId(chat.getId());
             response.setCreatedBy(chat.getCreatedBy());
-            response.setParticipantUsernames(usernames);
+            response.setParticipants(participants);
             response.setCreatedAt(chat.getCreatedAt());
             response.setUpdatedAt(chat.getUpdatedAt());
             return response;
