@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService{
@@ -46,5 +47,10 @@ public class UserService{
     @Cacheable("users")
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    public User getById(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User with id " + id + " not found"));
     }
 }

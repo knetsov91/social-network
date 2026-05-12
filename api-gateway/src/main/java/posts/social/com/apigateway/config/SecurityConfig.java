@@ -29,7 +29,7 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception {
         return http
-                .cors(Customizer.withDefaults())
+                .cors(c -> c.disable())
                 .authorizeExchange(req -> req.anyExchange().permitAll())
                 .csrf(c -> c.disable())
                 .build();

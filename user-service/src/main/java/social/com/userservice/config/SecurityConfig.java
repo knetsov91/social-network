@@ -45,7 +45,9 @@ public class SecurityConfig implements WebMvcConfigurer {
             .authorizeHttpRequests(req ->
                 req.requestMatchers("/api/v1/users/register",
                                 "/api/v1/users/login",
-                                "/api/v1/users/auth/issue"
+                                "/api/v1/users/auth/issue",
+                                "/api/v1/users",
+                                "/api/v1/users/*"
                         )
                         .permitAll()
                         .requestMatchers("/actuator/**").permitAll()

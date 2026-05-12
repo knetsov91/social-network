@@ -6,8 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
 import social.com.chatservice.chat.service.ChatService;
+import social.com.chatservice.message.service.MessageService;
 import social.com.chatservice.web.dto.ChatResponse;
 import social.com.chatservice.web.dto.CreateChatRequest;
+import social.com.chatservice.web.dto.MessageResponse;
+import social.com.chatservice.web.dto.UserChatResponse;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,10 +20,12 @@ public class ChatController {
 
     private ChatRepository chatRepository;
     private ChatService chatService;
+    private MessageService messageService;
 
-    public ChatController(ChatRepository chatRepository, ChatService chatService) {
+    public ChatController(ChatRepository chatRepository, ChatService chatService, MessageService messageService) {
         this.chatRepository = chatRepository;
         this.chatService = chatService;
+        this.messageService = messageService;
     }
 
     @GetMapping("/{chatId}")
@@ -32,9 +37,14 @@ public class ChatController {
     }
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<?> getUserChats(@PathVariable UUID userId) {
-        List<Chat> chats = chatService.getUserChats(userId);
+    public ResponseEntity<List<UserChatResponse>> getUserChats(@PathVariable UUID userId) {
+        List<UserChatResponse> chats = chatService.getUserChats(userId);
         return ResponseEntity.ok(chats);
+    }
+
+    @GetMapping("/{chatId}/messages")
+    public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable String chatId) {
+        return ResponseEntity.ok(messageService.getMessagesByChatId(chatId));
     }
 
     @PostMapping("/create")
