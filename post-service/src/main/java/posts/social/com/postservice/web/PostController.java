@@ -29,19 +29,10 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<AuthorPostsResponse>> getPosts(@RequestHeader(name="Authorization") String authorization) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        //TODO: query user service to check if authorId is valid
-        String token = authorization.split(" ")[1];
-        UUID authorId = UUID.fromString(token);
-
-        List<Post> posts =  postService.getPosts(authorId);
-        List<AuthorPostsResponse> mapped = Mapper.mapListPostsToListAuthorPostsResponse(posts);
-
-        return ResponseEntity.status(HttpStatus.OK).body(mapped);
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<AuthorPostsResponse>> getUserPosts(@PathVariable UUID userId) {
+        List<Post> posts = postService.getPosts(userId);
+        return ResponseEntity.ok(Mapper.mapListPostsToListAuthorPostsResponse(posts));
     }
 
     @PutMapping("/{postId}/likes")
