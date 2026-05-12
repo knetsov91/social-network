@@ -21,10 +21,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity post(@RequestHeader(name="Authorization") String authorization, @RequestBody PostCreateRequest postCreateRequest) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity post(@RequestBody PostCreateRequest postCreateRequest) {
         postService.create(postCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
