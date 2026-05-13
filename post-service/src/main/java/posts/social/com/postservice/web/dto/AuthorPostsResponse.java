@@ -12,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class AuthorPostsResponse {
+    private UUID id;
     private String title;
     private String content;
     private UUID authorId;

@@ -15,6 +15,7 @@ public class Mapper {
 
         posts.forEach(post -> {
             AuthorPostsResponse mapped = AuthorPostsResponse.builder()
+                    .id(post.getId())
                     .authorId(post.getAuthorId())
                     .title(post.getTitle())
                     .content(post.getContent())
