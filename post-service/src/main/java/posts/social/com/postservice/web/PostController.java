@@ -3,6 +3,7 @@ package posts.social.com.postservice.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.service.PostService;
 import posts.social.com.postservice.web.dto.AuthorPostsResponse;
 import posts.social.com.postservice.web.dto.LikeRequest;
