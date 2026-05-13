@@ -3,9 +3,9 @@ package posts.social.com.postservice.web;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.service.PostService;
 import posts.social.com.postservice.web.dto.AuthorPostsResponse;
+import posts.social.com.postservice.web.dto.LikeRequest;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 import java.util.List;
 import java.util.UUID;
@@ -33,19 +33,10 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/likes")
-    public ResponseEntity like(@PathVariable("postId") UUID postId, @RequestHeader(name="Authorization") String authorization) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        //TODO: query user service to check if authorId is valid
-        String token = authorization.split(" ")[1];
-        UUID userId = UUID.fromString(token);
-
-        boolean exists = postService.postLikeExists(postId, userId);
-        postService.togglePostLike(postId, userId);
-        if (exists) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity like(@PathVariable UUID postId, @RequestBody LikeRequest likeRequest) {
+        boolean liked = postService.togglePostLike(postId, likeRequest.getUserId());
+        return liked
+                ? ResponseEntity.status(HttpStatus.CREATED).build()
+                : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
