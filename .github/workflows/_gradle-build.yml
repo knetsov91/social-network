@@ -21,10 +21,6 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Build
-        working-directory: ${{ inputs.service }}
-        run: ./gradlew build -x test
-
-      - name: Unit tests
+      - name: Build & test
         working-directory: ${{ inputs.service }}
         run: ./gradlew test --tests "**.*UTest"
