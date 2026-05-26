@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.time.Duration;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,5 +51,14 @@ class PresenceServiceUTest {
 
         verify(redisTemplate).delete("presence:" + userId);
         verify(messagingTemplate).convertAndSend("/topic/presence", new PresenceResponse(userId, "OFFLINE"));
+    }
+
+    @Test
+    void test_isOnline_whenRedisKeyExists_thenReturnsTrue() {
+        UUID userId = UUID.randomUUID();
+
+        when(redisTemplate.hasKey("presence:" + userId)).thenReturn(true);
+
+        assertTrue(presenceService.isOnline(userId));
     }
 }
