@@ -17,11 +17,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.springframework.cache.Cache;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceUTest {
@@ -90,5 +97,25 @@ class PostServiceUTest {
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> postService.togglePostLike(postId, userId));
+    }
+
+    @Test
+    void test_togglePostLike_whenUserHasNotLikedPost_thenAddsLikeAndPublishesKafkaEvent() {
+        UUID postId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID authorId = UUID.randomUUID();
+
+        Post post = Post.builder().authorId(authorId).title("title").content("content").likes(new ArrayList<>()).build();
+
+        Cache cache = mock(Cache.class);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(cacheManager.getCache("user-posts")).thenReturn(cache);
+
+        boolean result = postService.togglePostLike(postId, userId);
+
+        assertTrue(result);
+        assertTrue(post.getLikes().contains(userId));
+        verify(kafkaTemplate).send(eq("likes-topic"), any(Like.class));
+        verify(postRepository).save(post);
     }
 }
