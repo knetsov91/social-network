@@ -158,6 +158,18 @@ All other endpoints require a valid `token` cookie.
 ./gradlew test
 ```
 
+## CI
+
+Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to `main` and `dev` when files within that service's directory change.
+
+All workflows delegate to a shared reusable workflow (`.github/workflows/_gradle-build.yml`) that runs on `ubuntu-latest` with Java 21 (Temurin) and executes a single step:
+
+```bash
+./gradlew test --tests "**.*UTest"
+```
+
+This compiles the service and runs unit tests. The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+
 ## Microservices documentation
 
 - User microservice ([here](./docs/user-service/overview.md))

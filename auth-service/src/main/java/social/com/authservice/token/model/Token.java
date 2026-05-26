@@ -13,4 +13,8 @@ public class Token implements Serializable {
         this.id = id;
         this.token = token;
     }
+
+    public String getToken() {
+        return token;
+    }
 }
