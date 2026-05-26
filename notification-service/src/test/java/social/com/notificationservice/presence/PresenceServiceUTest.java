@@ -41,4 +41,14 @@ class PresenceServiceUTest {
         verify(valueOperations).set("presence:" + userId, "ONLINE", Duration.ofSeconds(60));
         verify(messagingTemplate).convertAndSend("/topic/presence", new PresenceResponse(userId, "ONLINE"));
     }
+
+    @Test
+    void test_markOffline_whenUserIdProvided_thenDeletesRedisKeyAndBroadcastsOfflineStatus() {
+        UUID userId = UUID.randomUUID();
+
+        presenceService.markOffline(userId);
+
+        verify(redisTemplate).delete("presence:" + userId);
+        verify(messagingTemplate).convertAndSend("/topic/presence", new PresenceResponse(userId, "OFFLINE"));
+    }
 }
