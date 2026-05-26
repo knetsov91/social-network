@@ -50,4 +50,13 @@ class TokenServiceUTest {
 
         assertThrows(RuntimeException.class, () -> tokenService.isValid(request));
     }
+
+    @Test
+    void test_isValid_whenTokenNotBlacklisted_thenDoesNotThrow() {
+        TokenValidateRequest request = new TokenValidateRequest("jwt-token");
+
+        when(tokenRepository.findByToken("jwt-token")).thenReturn(Optional.empty());
+
+        tokenService.isValid(request);
+    }
 }
