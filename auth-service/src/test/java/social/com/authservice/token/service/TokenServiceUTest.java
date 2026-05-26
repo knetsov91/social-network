@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -58,5 +59,15 @@ class TokenServiceUTest {
         when(tokenRepository.findByToken("jwt-token")).thenReturn(Optional.empty());
 
         tokenService.isValid(request);
+    }
+
+    @Test
+    void test_isInvalidated_whenTokenIsBlacklisted_thenReturnsTrue() {
+        TokenValidateRequest request = new TokenValidateRequest("jwt-token");
+        Token blacklisted = new Token(UUID.randomUUID(), "jwt-token");
+
+        when(tokenRepository.findByToken("jwt-token")).thenReturn(Optional.of(blacklisted));
+
+        assertTrue(tokenService.isInvalidated(request));
     }
 }
