@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -116,6 +117,25 @@ class PostServiceUTest {
         assertTrue(result);
         assertTrue(post.getLikes().contains(userId));
         verify(kafkaTemplate).send(eq("likes-topic"), any(Like.class));
+        verify(postRepository).save(post);
+    }
+
+    @Test
+    void test_togglePostLike_whenUserAlreadyLikedPost_thenRemovesLike() {
+        UUID postId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID authorId = UUID.randomUUID();
+
+        Post post = Post.builder().authorId(authorId).title("title").content("content").likes(new ArrayList<>(List.of(userId))).build();
+
+        Cache cache = mock(Cache.class);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(cacheManager.getCache("user-posts")).thenReturn(cache);
+
+        boolean result = postService.togglePostLike(postId, userId);
+
+        assertFalse(result);
+        assertFalse(post.getLikes().contains(userId));
         verify(postRepository).save(post);
     }
 }
