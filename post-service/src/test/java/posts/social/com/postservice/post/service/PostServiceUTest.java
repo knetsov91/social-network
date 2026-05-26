@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,5 +80,15 @@ class PostServiceUTest {
 
         assertEquals(1, result.size());
         assertEquals(post, result.get(0));
+    }
+
+    @Test
+    void test_togglePostLike_whenPostNotFound_thenThrowsException() {
+        UUID postId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        when(postRepository.findById(postId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> postService.togglePostLike(postId, userId));
     }
 }
