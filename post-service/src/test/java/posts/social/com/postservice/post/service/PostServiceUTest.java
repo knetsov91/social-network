@@ -13,10 +13,14 @@ import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.repository.PostRepository;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PostServiceUTest {
@@ -50,5 +54,16 @@ class PostServiceUTest {
         assertEquals(authorId, captor.getValue().getAuthorId());
         assertEquals("title", captor.getValue().getTitle());
         assertEquals("content", captor.getValue().getContent());
+    }
+
+    @Test
+    void test_getPosts_whenNoPostsFoundForAuthor_thenReturnsEmptyList() {
+        UUID authorId = UUID.randomUUID();
+
+        when(postRepository.findByAuthorId(authorId)).thenReturn(Optional.empty());
+
+        List<Post> result = postService.getPosts(authorId);
+
+        assertTrue(result.isEmpty());
     }
 }
