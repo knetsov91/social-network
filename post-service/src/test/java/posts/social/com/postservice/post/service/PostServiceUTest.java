@@ -66,4 +66,18 @@ class PostServiceUTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void test_getPosts_whenPostsFoundForAuthor_thenReturnsThem() {
+        UUID authorId = UUID.randomUUID();
+
+        Post post = Post.builder().authorId(authorId).title("title").content("content").build();
+
+        when(postRepository.findByAuthorId(authorId)).thenReturn(Optional.of(List.of(post)));
+
+        List<Post> result = postService.getPosts(authorId);
+
+        assertEquals(1, result.size());
+        assertEquals(post, result.get(0));
+    }
 }
