@@ -34,6 +34,7 @@ public class CacheConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
+                .enableStatistics()
                 .build();
     }
 }
