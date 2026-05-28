@@ -57,6 +57,8 @@ spring:
           uri: lb:ws://chat-service
           predicates:
             - Path=/ws-chat/**
+      metrics:
+        enabled: true
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
 
