@@ -12,6 +12,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 
 import java.time.Duration;
+import java.util.Set;
+import java.util.Set;
 
 @Configuration
 @EnableCaching
@@ -34,6 +36,8 @@ public class CacheConfig {
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
+                .enableStatistics()
+                .initialCacheNames(Set.of("user-posts"))
                 .build();
     }
 }
