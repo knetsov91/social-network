@@ -11,6 +11,10 @@ cd infrastructure/observability
 docker compose up -d   # Prometheus :9090, Grafana :3000, Jaeger :16686
 ```
 
+## Custom Metrics
+
+`presence_online_users` (Gauge, notification-service) — number of users with an active WebSocket session, derived from the Redis presence key count.
+
 ## Distributed Tracing
 
 All services export traces via OpenTelemetry Protocol (OTLP) to Jaeger. Every request that enters the API Gateway generates a trace that spans all services it touches.
