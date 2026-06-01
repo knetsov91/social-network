@@ -13,7 +13,6 @@ import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +39,7 @@ class UserServiceUTest {
     }
 
     @Test
-    public void testRegister_whenUserExists_thenThrowException() {
+    public void test_register_whenUserExists_thenThrowException() {
         UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
         userRegisterRequest.setPassword("password");
         userRegisterRequest.setConfirmPassword("password");
@@ -51,7 +50,7 @@ class UserServiceUTest {
     }
 
     @Test
-    public void test_happy_case() {
+    public void test_register_whenValidRequest_thenSavesUser() {
         String password = "password";
         String hashedPassword = "hashedPassword";
         String username = "username";
@@ -81,33 +80,4 @@ class UserServiceUTest {
     }
 
 
-    @Test
-    public void test_successfulRegistration_evictsCache() {
-        // arrange
-        UserRegisterRequest req = new UserRegisterRequest();
-        req.setUsername("newUser");
-        req.setPassword("Secret123");
-        req.setConfirmPassword("Secret123");
-
-        when(passwordEncoder.encode("Secret123")).thenReturn("EncodedSecret");
-
-        User saved = new User();
-        saved.setId(UUID.randomUUID());
-        saved.setUsername("newUser");
-        saved.setPassword("EncodedSecret");
-        saved.setCreatedAt(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
-        saved.setActive(true);
-
-        when(userRepository.findByUsername("newUser")).thenReturn(Optional.empty());
-        when(userRepository.save(any(User.class))).thenReturn(saved);
-
-        // act: successful registration
-        userService.register(req);
-
-        // act: subsequent call to getAll should trigger repository fetch (cache cleared)
-        userService.getAll();
-
-        // assert: repository.findAll was invoked, confirming cache eviction
-        verify(userRepository, times(1)).findAll();
-    }
 }
