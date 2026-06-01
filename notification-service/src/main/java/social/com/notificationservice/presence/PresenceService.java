@@ -1,10 +1,13 @@
 package social.com.notificationservice.presence;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -16,9 +19,17 @@ public class PresenceService {
     private final StringRedisTemplate redisTemplate;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public PresenceService(StringRedisTemplate redisTemplate, SimpMessagingTemplate messagingTemplate) {
+    public PresenceService(StringRedisTemplate redisTemplate, SimpMessagingTemplate messagingTemplate, MeterRegistry meterRegistry) {
         this.redisTemplate = redisTemplate;
         this.messagingTemplate = messagingTemplate;
+        Gauge.builder("presence.online_users", this, PresenceService::onlineUserCount)
+                .description("Number of users currently online")
+                .register(meterRegistry);
+    }
+
+    private double onlineUserCount() {
+        Set<String> keys = redisTemplate.keys(PRESENCE_KEY_PREFIX + "*");
+        return keys == null ? 0 : keys.size();
     }
 
     public void markOnline(UUID userId) {

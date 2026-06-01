@@ -1,8 +1,9 @@
 package social.com.notificationservice.presence;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PresenceServiceUTest {
 
-    @InjectMocks
     private PresenceService presenceService;
 
     @Mock
@@ -31,6 +31,11 @@ class PresenceServiceUTest {
 
     @Mock
     private SimpMessagingTemplate messagingTemplate;
+
+    @BeforeEach
+    void setUp() {
+        presenceService = new PresenceService(redisTemplate, messagingTemplate, new SimpleMeterRegistry());
+    }
 
     @Test
     void test_markOnline_whenCalled_thenSetsRedisKeyAndBroadcastsOnlineStatus() {
