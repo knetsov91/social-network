@@ -37,7 +37,7 @@ class ChatServiceUTest {
     private UserClient userClient;
 
     @Test
-    void test_getUserChats_happyPath() {
+    void test_getUserChats_whenUserFound_thenReturnsMappedChatsWithParticipants() {
         UUID userId = UUID.randomUUID();
         UUID participantId = UUID.randomUUID();
 
@@ -61,7 +61,7 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_getUserChats_whenNotFound_thenThrowException() {
+    void test_getUserChats_whenUserNotFound_thenThrowsException() {
         UUID userId = UUID.randomUUID();
 
         when(chatRepository.findByParticipantsContains(userId)).thenReturn(Optional.empty());
@@ -70,7 +70,7 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_createChat_happyPath() {
+    void test_createChat_whenRequestProvided_thenSavesChat() {
         UUID createdBy = UUID.randomUUID();
         UUID participant = UUID.randomUUID();
 
@@ -88,7 +88,7 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_getChatById_happyPath() {
+    void test_getChatById_whenChatFound_thenReturnsChat() {
         String chatId = "chat-123";
 
         Chat chat = new Chat();
@@ -102,7 +102,7 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_getChatById_whenNotFound_thenThrowException() {
+    void test_getChatById_whenChatNotFound_thenThrowsException() {
         String chatId = "chat-123";
 
         when(chatRepository.findById(chatId)).thenReturn(Optional.empty());
@@ -111,7 +111,7 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_addMessageToChat_happyPath() {
+    void test_addMessageToChat_whenMessageProvided_thenAddsMessageAndSavesChat() {
         String chatId = "chat-123";
 
         Chat chat = new Chat();
