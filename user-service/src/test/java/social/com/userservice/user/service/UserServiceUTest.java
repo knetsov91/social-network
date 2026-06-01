@@ -13,6 +13,7 @@ import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,5 +80,16 @@ class UserServiceUTest {
         Assertions.assertEquals(user.getCreatedAt(), now);
     }
 
+    @Test
+    public void test_getById_whenUserFound_thenReturnsUser() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
 
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        User result = userService.getById(userId);
+
+        Assertions.assertEquals(user, result);
+    }
 }
