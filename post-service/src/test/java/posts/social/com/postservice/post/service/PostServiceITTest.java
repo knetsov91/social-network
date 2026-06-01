@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import posts.social.com.postservice.Like;
 import posts.social.com.postservice.post.repository.PostRepository;
 
+import posts.social.com.postservice.web.dto.PostCreateRequest;
+
 import java.util.UUID;
 
 import static org.mockito.Mockito.times;
@@ -36,5 +38,22 @@ class PostServiceITTest {
         postService.getPosts(authorId);
 
         verify(postRepository, times(1)).findByAuthorId(authorId);
+    }
+
+    @Test
+    void test_create_whenPostCreated_thenEvictsCacheSoNextGetPostsHitsDb() {
+        UUID authorId = UUID.randomUUID();
+
+        postService.getPosts(authorId);
+
+        PostCreateRequest request = new PostCreateRequest();
+        request.setAuthorId(authorId);
+        request.setTitle("title");
+        request.setContent("content");
+        postService.create(request);
+
+        postService.getPosts(authorId);
+
+        verify(postRepository, times(2)).findByAuthorId(authorId);
     }
 }
