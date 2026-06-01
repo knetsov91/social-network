@@ -153,10 +153,26 @@ All other endpoints require a valid `token` cookie.
 
 ## Running tests
 
+**Unit tests** — no infrastructure required:
+
 ```bash
 # From any service directory
-./gradlew test
+./gradlew test --tests "**.*UTest"
 ```
+
+**Integration tests** — require PostgreSQL and Redis running. Before running post-service integration tests, create the test database:
+
+```bash
+docker exec <postgres-container> psql -U $POSTGRES_USER -c "CREATE DATABASE posts_test;"
+```
+
+Then run from the service directory:
+
+```bash
+./gradlew test --tests "**.*ITTest"
+```
+
+Integration tests use a dedicated database (`posts_test`) to avoid touching the main database. Each test rolls back its writes via `@Transactional` so tests don't affect each other.
 
 ## CI
 
