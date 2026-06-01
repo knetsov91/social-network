@@ -28,7 +28,7 @@ class FollowServiceUTest {
     private TimeProvider timeProvider;
 
     @Test
-    void test_follow_happyPath() {
+    void test_follow_whenFollowerAndFolloweeProvided_thenSavesFollow() {
         UUID followerId = UUID.randomUUID();
         UUID followeeId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.of(2020, 1, 1, 0, 0);
@@ -47,7 +47,7 @@ class FollowServiceUTest {
     }
 
     @Test
-    void test_getUserFollowings_happyPath() {
+    void test_getUserFollowings_whenFollowingsExist_thenReturnsFolloweeIds() {
         UUID followerId = UUID.randomUUID();
         UUID followeeId1 = UUID.randomUUID();
         UUID followeeId2 = UUID.randomUUID();
