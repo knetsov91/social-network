@@ -92,4 +92,13 @@ class UserServiceUTest {
 
         Assertions.assertEquals(user, result);
     }
+
+    @Test
+    public void test_getById_whenUserNotFound_thenThrowsException() {
+        UUID userId = UUID.randomUUID();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(RuntimeException.class, () -> userService.getById(userId));
+    }
 }
