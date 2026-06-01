@@ -66,4 +66,15 @@ class FollowServiceUTest {
 
         assertEquals(List.of(followeeId1, followeeId2), result);
     }
+
+    @Test
+    void test_getUserFollowings_whenNoFollowingsExist_thenReturnsEmptyList() {
+        UUID userId = UUID.randomUUID();
+
+        when(followRepository.findByFollowerId(userId)).thenReturn(Optional.empty());
+
+        List<UUID> result = followService.getUserFollowings(userId);
+
+        assertEquals(List.of(), result);
+    }
 }
