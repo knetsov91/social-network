@@ -2,7 +2,7 @@
 
 ## Project overview
 
-A social network where users can create and like posts, follow each other, and chat in real time. Each core domain — users, authentication, posts, chat, and notifications — is implemented as an independent microservice and consumed by a React SPA through an API Gateway. Services communicate synchronously via REST and asynchronously via Kafka. Observability is provided by Prometheus and Grafana.
+A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
 
 ## Tech stack
 
