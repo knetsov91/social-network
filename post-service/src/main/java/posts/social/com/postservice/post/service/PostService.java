@@ -51,11 +51,12 @@ public class PostService {
     }
 
     public Page<Post> getFeed(UUID userId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         List<UUID> followings = userClient.getFollowings(userId);
         if (followings.isEmpty()) {
-            return Page.empty();
+            return Page.empty(pageable);
         }
-        return postRepository.findByAuthorIdIn(followings, PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return postRepository.findByAuthorIdIn(followings, pageable);
     }
 
     public boolean togglePostLike(UUID postId, UUID userId) {
