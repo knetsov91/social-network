@@ -20,6 +20,7 @@ public class Mapper {
                     .title(post.getTitle())
                     .content(post.getContent())
                     .likes(post.getLikes())
+                    .createdAt(post.getCreatedAt())
                     .build();
             authorPostsResponses.add(mapped);
         });
