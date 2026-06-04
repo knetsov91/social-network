@@ -9,6 +9,6 @@ import java.util.UUID;
 @FeignClient(name = "user-service")
 public interface UserClient {
 
-    @GetMapping("/api/v1/users/follow/{userId}/followings")
+    @GetMapping("/api/v1/users/{userId}/followings")
     List<UUID> getFollowings(@PathVariable UUID userId);
 }

@@ -51,6 +51,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         )
                         .permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/v1/users/*/followings").permitAll()
                         .anyRequest().authenticated()
             ).csrf(c -> c.disable())
            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
