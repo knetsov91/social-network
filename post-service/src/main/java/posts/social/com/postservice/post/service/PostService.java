@@ -3,9 +3,13 @@ package posts.social.com.postservice.post.service;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import posts.social.com.postservice.Like;
+import posts.social.com.postservice.client.UserClient;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 import posts.social.com.postservice.post.repository.PostRepository;
@@ -18,14 +22,16 @@ public class PostService {
     private static final String TOPIC_LIKES = "likes-topic";
     private static final String CACHE_USER_POSTS = "user-posts";
 
-    private PostRepository postRepository;
-    private KafkaTemplate<String, Like> kafkaTemplate;
-    private CacheManager cacheManager;
+    private final PostRepository postRepository;
+    private final KafkaTemplate<String, Like> kafkaTemplate;
+    private final CacheManager cacheManager;
+    private final UserClient userClient;
 
-    public PostService(PostRepository postRepository, KafkaTemplate<String, Like> kafkaTemplate, CacheManager cacheManager) {
+    public PostService(PostRepository postRepository, KafkaTemplate<String, Like> kafkaTemplate, CacheManager cacheManager, UserClient userClient) {
         this.postRepository = postRepository;
         this.kafkaTemplate = kafkaTemplate;
         this.cacheManager = cacheManager;
+        this.userClient = userClient;
     }
 
     @CacheEvict(value = CACHE_USER_POSTS, key = "#postCreateRequest.authorId")
@@ -42,6 +48,14 @@ public class PostService {
     public List<Post> getPosts(UUID authorId) {
         return postRepository.findByAuthorId(authorId)
                 .orElse(List.of());
+    }
+
+    public Page<Post> getFeed(UUID userId, int page, int size) {
+        List<UUID> followings = userClient.getFollowings(userId);
+        if (followings.isEmpty()) {
+            return Page.empty();
+        }
+        return postRepository.findByAuthorIdIn(followings, PageRequest.of(page, size, Sort.by("createdAt").descending()));
     }
 
     public boolean togglePostLike(UUID postId, UUID userId) {
