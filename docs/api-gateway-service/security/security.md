@@ -20,12 +20,17 @@ The following paths bypass authentication — no `token` cookie is required:
 |---|---|
 | `/api/*/users/register` | Register a new user |
 | `/api/*/users/login` | Login and receive token cookie |
+| `/api/*/users` | List users |
+| `/api/*/users/{userId}` | Get user by ID |
 | `/api/*/tokens/**` | Token operations (issue, validate, invalidate) |
 | `/actuator/**` | Spring Boot actuator endpoints |
+| `/ws-chat/**` | WebSocket chat endpoint |
+| `/ws-notifications/**` | WebSocket notifications endpoint |
 
 Wildcards:
 - `*` — matches a **single path segment** (e.g. `v1`)
 - `**` — matches **any number of path segments** (e.g. `/tokens/validate`, `/tokens/issue`)
+- `{param}` — named path parameter (e.g. a user ID)
 
 ## Cookie Handling
 
