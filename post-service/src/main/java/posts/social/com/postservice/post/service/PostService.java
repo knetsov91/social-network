@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import posts.social.com.postservice.Like;
 import posts.social.com.postservice.client.UserClient;
 import posts.social.com.postservice.post.model.Post;
@@ -59,6 +60,7 @@ public class PostService {
         return postRepository.findByAuthorIdIn(followings, pageable);
     }
 
+    @Transactional
     public boolean togglePostLike(UUID postId, UUID userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post with id: " + postId + " not found"));
