@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
 import org.springframework.kafka.core.KafkaTemplate;
 import posts.social.com.postservice.Like;
+import posts.social.com.postservice.client.UserClient;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.repository.PostRepository;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
@@ -16,6 +17,8 @@ import posts.social.com.postservice.web.dto.PostCreateRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 
@@ -45,6 +48,20 @@ class PostServiceUTest {
 
     @Mock
     private CacheManager cacheManager;
+
+    @Mock
+    private UserClient userClient;
+
+    @Test
+    void test_getFeed_whenNoFollowings_thenReturnsEmptyPage() {
+        UUID userId = UUID.randomUUID();
+
+        when(userClient.getFollowings(userId)).thenReturn(List.of());
+
+        Page<Post> result = postService.getFeed(userId, 0, 10);
+
+        assertTrue(result.isEmpty());
+    }
 
     @Test
     void test_create_whenValidPostCreateRequest_thenSavesPostWithCorrectFields() {
