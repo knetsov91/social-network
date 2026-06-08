@@ -32,6 +32,9 @@ public class Post {
     @Column(nullable = false)
     private UUID authorId;
 
+    @Version
+    private Integer version;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
