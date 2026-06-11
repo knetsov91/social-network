@@ -28,6 +28,7 @@ public class OutboxEvent {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String payload;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean published = false;
 
