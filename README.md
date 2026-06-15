@@ -2,7 +2,7 @@
 
 ## Project overview
 
-A social network where users can create and like posts, follow each other, and chat in real time. Each core domain — users, authentication, posts, chat, and notifications — is implemented as an independent microservice and consumed by a React SPA through an API Gateway. Services communicate synchronously via REST and asynchronously via Kafka. Observability is provided by Prometheus and Grafana.
+A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
 
 ## Tech stack
 
@@ -153,10 +153,26 @@ All other endpoints require a valid `token` cookie.
 
 ## Running tests
 
+**Unit tests** — no infrastructure required:
+
 ```bash
 # From any service directory
-./gradlew test
+./gradlew test --tests "**.*UTest"
 ```
+
+**Integration tests** — require PostgreSQL and Redis running. Before running post-service integration tests, create the test database:
+
+```bash
+docker exec <postgres-container> psql -U $POSTGRES_USER -c "CREATE DATABASE posts_test;"
+```
+
+Then run from the service directory:
+
+```bash
+./gradlew test --tests "**.*ITTest"
+```
+
+Integration tests use a dedicated database (`posts_test`) to avoid touching the main database. Each test rolls back its writes via `@Transactional` so tests don't affect each other.
 
 ## CI
 

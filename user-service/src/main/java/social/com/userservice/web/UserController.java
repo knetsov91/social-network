@@ -65,7 +65,7 @@ public class UserController {
                 .secure(true)
                 .path("/")
                 .maxAge(3600)
-                .sameSite(SameSiteCookies.NONE.toString())
+                .sameSite(SameSiteCookies.STRICT.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
         return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));

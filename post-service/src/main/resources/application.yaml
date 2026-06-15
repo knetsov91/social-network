@@ -24,6 +24,14 @@ spring:
       ddl-auto: update
 
   cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          user-service:
+            connectTimeout: 2000
+            readTimeout: 3000
     vault:
       uri: http://127.0.0.1:8200
       token: ${VAULT_TOKEN}
@@ -61,6 +69,15 @@ management:
   otlp:
     tracing:
       endpoint: http://localhost:4318/v1/traces
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
 
 springdoc:
   swagger-ui:

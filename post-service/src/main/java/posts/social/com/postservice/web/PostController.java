@@ -1,5 +1,6 @@
 package posts.social.com.postservice.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,15 @@ public class PostController {
     public ResponseEntity<List<AuthorPostsResponse>> getUserPosts(@PathVariable UUID userId) {
         List<Post> posts = postService.getPosts(userId);
         return ResponseEntity.ok(Mapper.mapListPostsToListAuthorPostsResponse(posts));
+    }
+
+    @GetMapping("/feed")
+    public ResponseEntity<Page<AuthorPostsResponse>> getFeed(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<Post> posts = postService.getFeed(userId, page, size);
+        return ResponseEntity.ok(posts.map(Mapper::mapPostToAuthorPostsResponse));
     }
 
     @PutMapping("/{postId}/likes")

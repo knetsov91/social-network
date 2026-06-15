@@ -20,18 +20,23 @@ The following paths bypass authentication — no `token` cookie is required:
 |---|---|
 | `/api/*/users/register` | Register a new user |
 | `/api/*/users/login` | Login and receive token cookie |
+| `/api/*/users` | List users |
+| `/api/*/users/{userId}` | Get user by ID |
 | `/api/*/tokens/**` | Token operations (issue, validate, invalidate) |
 | `/actuator/**` | Spring Boot actuator endpoints |
+| `/ws-chat/**` | WebSocket chat endpoint |
+| `/ws-notifications/**` | WebSocket notifications endpoint |
 
 Wildcards:
 - `*` — matches a **single path segment** (e.g. `v1`)
 - `**` — matches **any number of path segments** (e.g. `/tokens/validate`, `/tokens/issue`)
+- `{param}` — named path parameter (e.g. a user ID)
 
 ## Cookie Handling
 
 Authentication is **cookie-based** — the JWT is stored in an **`HttpOnly`** cookie, so **JavaScript cannot read it**. The browser sends it automatically with every request; the client never needs to extract, store, or attach it manually.
 
-The cookie is named **`token`**, is **`HttpOnly`** (not accessible via JavaScript), **`Secure`** (HTTPS only), **`SameSite=None`** (allows cross-origin requests from the frontend), and expires after **1 hour**.
+The cookie is named **`token`**, is **`HttpOnly`** (not accessible via JavaScript), **`Secure`** (HTTPS only), **`SameSite=Strict`** (only sent when the request originates from the same site, preventing CSRF), and expires after **1 hour**.
 
 The cookie is **set by user-service** on successful login. The gateway reads it from every subsequent request in **`AuthFilter`** and passes the value to **auth-service** for validation.
 

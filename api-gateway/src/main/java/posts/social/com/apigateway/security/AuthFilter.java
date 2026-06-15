@@ -1,5 +1,7 @@
 package posts.social.com.apigateway.security;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,7 @@ import org.springframework.web.util.pattern.PathPattern;
 import org.springframework.web.util.pattern.PathPatternParser;
 import posts.social.com.apigateway.auth.service.AuthService;
 import reactor.core.publisher.Mono;
+import java.util.Base64;
 import java.util.List;
 
 @Component
@@ -36,10 +39,23 @@ public class AuthFilter implements WebFilter, Ordered {
             "/ws-chat/**",
             "/ws-notifications/**"
     ).stream().map(new PathPatternParser()::parse).toList();
-    private AuthService authService;
+    private final AuthService authService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AuthFilter(AuthService authService) {
         this.authService = authService;
+    }
+
+    private String extractUserId(String token) {
+        try {
+            String payload = token.split("\\.")[1];
+            byte[] decoded = Base64.getUrlDecoder().decode(payload);
+            JsonNode claims = objectMapper.readTree(decoded);
+            return claims.path("userId").asText(null);
+        } catch (Exception e) {
+            log.warn("Failed to extract userId from token: {}", e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -66,8 +82,13 @@ public class AuthFilter implements WebFilter, Ordered {
             return unauthorized(exchange);
         }
 
+        String userId = extractUserId(token.getValue());
+        ServerWebExchange mutatedExchange = userId != null
+                ? exchange.mutate().request(r -> r.header("X-User-Id", userId)).build()
+                : exchange;
+
         return authService.validateToken(token.getValue())
-                .then(chain.filter(exchange))
+                .then(chain.filter(mutatedExchange))
                 .onErrorResume(e -> {
                     log.error("Token validation failed: {}", e.getMessage());
                     return unauthorized(exchange);

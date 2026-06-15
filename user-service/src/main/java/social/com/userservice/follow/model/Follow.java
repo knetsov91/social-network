@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"followerId", "followeeId"}))
 public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

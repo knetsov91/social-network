@@ -2,6 +2,7 @@ package social.com.userservice.follow.service;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import social.com.userservice.common.TimeProvider;
 import social.com.userservice.follow.model.Follow;
@@ -22,13 +23,15 @@ public class FollowService {
 
     @CacheEvict(value = "followings", key = "#followerId")
     public void follow(UUID followerId, UUID followeeId) {
-
         Follow follow = new Follow();
         follow.setFolloweeId(followeeId);
         follow.setFollowerId(followerId);
         follow.setCreatedAt(timeProvider.now());
 
-        followRepository.save(follow);
+        try {
+            followRepository.save(follow);
+        } catch (DataIntegrityViolationException ignored) {
+        }
     }
 
     @Cacheable(value = "followings", key = "#userId")

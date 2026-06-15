@@ -4,6 +4,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
@@ -24,6 +25,7 @@ public class UserService{
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     @CacheEvict(value = "users", allEntries = true)
     public User register(UserRegisterRequest userRegisterRequest) {
 

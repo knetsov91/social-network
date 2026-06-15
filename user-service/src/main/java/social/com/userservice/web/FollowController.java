@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/users/follow")
 public class FollowController {
 
     private final FollowService followService;
@@ -21,18 +20,16 @@ public class FollowController {
         this.followService = followService;
     }
 
-    @PostMapping
+    @PostMapping("/api/v1/users/follow")
     public ResponseEntity<?> follow(@AuthenticationPrincipal UserDetails authUser, @RequestBody FollowRequest followRequest) {
         User user = (User) authUser;
         followService.follow(user.getId(), followRequest.getFolloweId());
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}/followings")
-    public  ResponseEntity<?> getUserFollowings(@PathVariable(name="userId") UUID userId) {
+    @GetMapping("/api/v1/users/{userId}/followings")
+    public ResponseEntity<?> getUserFollowings(@PathVariable(name="userId") UUID userId) {
         List<UUID> userFollowings = followService.getUserFollowings(userId);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(userFollowings);
+        return ResponseEntity.status(HttpStatus.OK).body(userFollowings);
     }
 }

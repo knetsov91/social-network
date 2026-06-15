@@ -15,8 +15,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import social.com.chatservice.web.dto.CreateMessageRequest;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +36,7 @@ class MessageServiceUTest {
     private ChatService chatService;
 
     @Test
-    void test_getMessagesByChatId_happyPath() {
+    void test_getMessagesByChatId_whenChatFound_thenReturnsMappedMessages() {
         String chatId = "chat-123";
         UUID senderId = UUID.randomUUID();
         UUID receiverId = UUID.randomUUID();
@@ -60,6 +64,36 @@ class MessageServiceUTest {
         assertEquals(senderId, result.get(0).getSenderId());
         assertEquals(receiverId, result.get(0).getReceiverId());
         assertEquals(now, result.get(0).getCreatedAt());
+    }
+
+    @Test
+    void test_createMessage_whenRequestProvided_thenSavesMessageAndAddsToChat() {
+        UUID senderId = UUID.randomUUID();
+        UUID receiverId = UUID.randomUUID();
+
+        CreateMessageRequest request = new CreateMessageRequest();
+        request.setChatId("chat-123");
+        request.setText("hello");
+        request.setSenderId(senderId);
+        request.setReceiverId(receiverId);
+
+        Message saved = Message.builder()
+                .id("msg-1")
+                .text("hello")
+                .senderId(senderId)
+                .receiverId(receiverId)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        when(messageRepository.save(any(Message.class))).thenReturn(saved);
+
+        MessageResponse result = messageService.createMessage(request);
+
+        verify(chatService).addMessageToChat("chat-123", saved);
+        assertEquals("msg-1", result.getId());
+        assertEquals("hello", result.getText());
+        assertEquals(senderId, result.getSenderId());
+        assertEquals(receiverId, result.getReceiverId());
     }
 
     @Test
