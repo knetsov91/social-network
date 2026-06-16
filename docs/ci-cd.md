@@ -30,3 +30,21 @@ The reusable workflow runs the following steps for each service:
 4. **Unit tests** — runs unit tests only
 
 Integration tests are excluded — they require real databases and are not yet wired up in CI.
+
+## Docker Image Publishing
+
+On every push to `main`, each service workflow runs a **publish** job after the build passes. **Images are only published for services whose files changed.** The job builds a Docker image from the service's **Dockerfile** and pushes it to DockerHub.
+
+Images are named with a `social-network-` prefix to group them by project:
+
+- **api-gateway** — social-network-api-gateway
+- **auth-service** — social-network-auth-service
+- **chat-service** — social-network-chat-service
+- **notification-service** — social-network-notification-service
+- **post-service** — social-network-post-service
+- **service-discovery** — social-network-service-discovery
+- **user-service** — social-network-user-service
+
+Each push produces two tags — **:latest** and **:<commit-sha>** — so you can always reference the exact build that produced an image.
+
+The publish job is skipped on `dev` pushes and pull requests. It requires two GitHub Actions secrets: **DOCKERHUB_USERNAME** and **DOCKERHUB_TOKEN**.
