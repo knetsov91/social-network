@@ -1,5 +1,6 @@
 package posts.social.com.postservice.post.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -7,9 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.CacheManager;
-import org.springframework.kafka.core.KafkaTemplate;
-import posts.social.com.postservice.Like;
 import posts.social.com.postservice.client.UserClient;
+import posts.social.com.postservice.outbox.OutboxEvent;
+import posts.social.com.postservice.outbox.OutboxEventRepository;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.repository.PostRepository;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,7 +44,10 @@ class PostServiceUTest {
     private PostRepository postRepository;
 
     @Mock
-    private KafkaTemplate<String, Like> kafkaTemplate;
+    private OutboxEventRepository outboxEventRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @Mock
     private CacheManager cacheManager;
@@ -133,7 +136,7 @@ class PostServiceUTest {
 
         assertTrue(result);
         assertTrue(post.getLikes().contains(userId));
-        verify(kafkaTemplate).send(eq("likes-topic"), any(Like.class));
+        verify(outboxEventRepository).save(any(OutboxEvent.class));
         verify(postRepository).save(post);
     }
 
