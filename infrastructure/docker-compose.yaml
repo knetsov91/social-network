@@ -28,7 +28,7 @@ services:
       - social_network_db_data:/var/lib/postgresql
 
   user-service-db:
-    image: mysql
+    image: mysql:9.7
     ports:
       - "3306:3306"
     environment:
