@@ -2,6 +2,15 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.4'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'io.sentry.jvm.gradle' version '6.11.0'
+}
+
+sentry {
+    includeSourceContext = true
+    org = "dev-7eg"
+    projectName = "java-spring-boot"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    enableTracing = true
 }
 
 ext {
@@ -46,6 +55,7 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5"
+    implementation 'io.sentry:sentry-async-profiler:8.43.2'
 }
 
 dependencyManagement {
