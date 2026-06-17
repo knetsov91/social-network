@@ -1,6 +1,7 @@
 package social.com.userservice;
 
 import feign.FeignException;
+import io.sentry.Sentry;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,6 +41,7 @@ public class ExceptionController {
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
+        Sentry.captureException(e);
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode("400");
@@ -48,6 +50,7 @@ public class ExceptionController {
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handle(FeignException e) {
+        Sentry.captureException(e);
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage("Communication error");
         errorResponse.setCode(String.valueOf(e.status()));
@@ -68,6 +71,7 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handle(Exception e) {
+        Sentry.captureException(e);
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage("Something went wrong");
         errorResponse.setCode("500");
