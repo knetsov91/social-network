@@ -10,7 +10,6 @@ sentry {
     org = "dev-7eg"
     projectName = "java-spring-boot"
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
-    enableTracing = true
 }
 
 ext {
