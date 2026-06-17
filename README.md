@@ -178,13 +178,22 @@ Integration tests use a dedicated database (`posts_test`) to avoid touching the 
 
 Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to `main` and `dev` when files within that service's directory change.
 
-All workflows delegate to a shared reusable workflow (`.github/workflows/_gradle-build.yml`) that runs on `ubuntu-latest` with Java 21 (Temurin) and executes a single step:
+Each workflow has two jobs:
+
+**build** — delegates to `.github/workflows/_gradle-build.yml`, runs on `ubuntu-latest` with Java 21 (Temurin):
 
 ```bash
 ./gradlew test --tests "**.*UTest"
 ```
 
-This compiles the service and runs unit tests. The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+
+**publish** — runs only on direct push to `main`, after `build` passes. Delegates to `.github/workflows/_docker-publish.yml`, which builds the service's Docker image and pushes it to DockerHub with two tags:
+
+- `<username>/social-network-<service>:latest`
+- `<username>/social-network-<service>:<git-sha>`
+
+Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets.
 
 ## Microservices documentation
 
