@@ -71,6 +71,17 @@ management:
     tracing:
       endpoint: http://localhost:4318/v1/traces
 
+sentry:
+  dsn: ${SENTRY_DSN}
+  send-default-pii: true
+  logs:
+    enabled: true
+  traces-sample-rate: 1.0
+  profile-session-sample-rate: 1.0
+  profile-lifecycle: TRACE
+  tags:
+    service: user-service
+
 springdoc:
   swagger-ui:
     path: /api/v1/users/swagger-ui
