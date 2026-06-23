@@ -82,6 +82,9 @@ resilience4j:
 sentry:
   dsn: ${SENTRY_DSN}
   send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
   tags:
     service: post-service
 
