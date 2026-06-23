@@ -21,4 +21,10 @@ public class ExceptionController {
         Sentry.captureException(e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handle(Exception e) {
+        Sentry.captureException(e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong");
+    }
 }
