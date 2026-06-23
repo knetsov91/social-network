@@ -5,7 +5,7 @@ spring:
     mongodb:
       host: ${MONGODB_HOST}
       database: chats
-      port: 27017
+      port: 27018
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
       authentication-database: ${MONGO_AUTH}
