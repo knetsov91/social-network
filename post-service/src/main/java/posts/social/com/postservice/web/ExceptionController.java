@@ -15,4 +15,10 @@ public class ExceptionController {
         Sentry.captureException(ex);
         return ResponseEntity.status(HttpStatus.CONFLICT).body("Resource was modified by another request, please retry.");
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handle(RuntimeException e) {
+        Sentry.captureException(e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
 }
