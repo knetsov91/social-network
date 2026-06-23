@@ -41,6 +41,7 @@ public class ExceptionController {
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handle(RuntimeException e) {
+        log.error("Unhandled RuntimeException", e);
         Sentry.captureException(e);
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
