@@ -42,3 +42,12 @@ management:
   otlp:
     tracing:
       endpoint: http://localhost:4318/v1/traces
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: chat-service
