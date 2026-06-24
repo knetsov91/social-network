@@ -34,3 +34,12 @@ management:
   endpoint:
     health:
       show-details: always
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: notification-service
