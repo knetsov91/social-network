@@ -27,6 +27,7 @@ public class NotificationService {
             like.setDate(LocalDateTime.now());
 
             messagingTemplate.convertAndSend("/topic/likes", like);
+            log.info("Likes event processed: user={}, post={}", like.getUser(), like.getPost());
         } catch (Exception e) {
             log.error("Failed to process likes event", e);
         }
