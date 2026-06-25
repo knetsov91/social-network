@@ -26,10 +26,11 @@ public class ExceptionController {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ExceptionResponse> handleExpiredJwtException(ExpiredJwtException e) {
+        log.error("JWT has expired", e);
+        Sentry.captureException(e);
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage("JWT has expired");
         exceptionResponse.setStausCode(HttpStatus.UNAUTHORIZED.value());
-        log.error(e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionResponse);
     }
 
