@@ -1,5 +1,6 @@
 package social.com.chatservice.chat.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ChatService {
 
@@ -57,7 +59,8 @@ public class ChatService {
         chat.setCreatedAt(LocalDateTime.now());
         chat.setUpdatedAt(LocalDateTime.now());
 
-         chatRepository.save(chat);
+        chatRepository.save(chat);
+        log.info("Chat created: createdBy={}, participants={}", chat.getCreatedBy(), chat.getParticipants());
     }
 
     public Chat getChatById(String chatId) {
