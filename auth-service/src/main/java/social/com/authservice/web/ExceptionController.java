@@ -2,6 +2,7 @@ package social.com.authservice.web;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,11 @@ public class ExceptionController {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ExceptionResponse> handleJwtException(JwtException e) {
+        log.error("Invalid JWT", e);
+        Sentry.captureException(e);
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage("Invalid JWT");
         exceptionResponse.setStausCode(HttpStatus.BAD_REQUEST.value());
-        log.error(e.getMessage(), e);
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
