@@ -36,7 +36,8 @@ public class ExceptionController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> exception(Exception e) {
-        log.error(e.getStackTrace().toString());
+        log.error("Unhandled exception", e);
+        Sentry.captureException(e);
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setMessage(e.getMessage());
         exceptionResponse.setStausCode(500);
