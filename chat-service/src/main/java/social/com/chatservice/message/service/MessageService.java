@@ -1,5 +1,6 @@
 package social.com.chatservice.message.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import social.com.chatservice.chat.service.ChatService;
 import social.com.chatservice.message.model.Message;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class MessageService {
 
@@ -38,6 +40,7 @@ public class MessageService {
 
         Message saved = messageRepository.save(message);
         chatService.addMessageToChat(createMessageRequest.getChatId(), saved);
+        log.info("Message sent: chatId={}, sender={}", createMessageRequest.getChatId(), createMessageRequest.getSenderId());
 
         return Mapper.mapMessageToMessageResponse(saved);
     }
