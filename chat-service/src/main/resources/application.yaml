@@ -5,7 +5,7 @@ spring:
     mongodb:
       host: ${MONGODB_HOST}
       database: chats
-      port: 27017
+      port: 27018
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
       authentication-database: ${MONGO_AUTH}
@@ -42,3 +42,12 @@ management:
   otlp:
     tracing:
       endpoint: http://localhost:4318/v1/traces
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: chat-service

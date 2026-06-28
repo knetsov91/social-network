@@ -1,5 +1,6 @@
 package posts.social.com.apigateway;
 
+import io.sentry.Sentry;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
@@ -39,6 +40,7 @@ public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
         Map<String, Object> errorAttr = getErrorAttributes(request, ErrorAttributeOptions.defaults());
 
         Throwable error = getError(request);
+        Sentry.captureException(error);
 
         ErrorResponse errorResponse = new ErrorResponse(
                 (String) errorAttr.get("error"),

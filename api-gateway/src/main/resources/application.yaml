@@ -112,3 +112,12 @@ auth:
 jks:
   webclientstore:
     key: ${WEBCLIENTJKS_KEY}
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: api-gateway
