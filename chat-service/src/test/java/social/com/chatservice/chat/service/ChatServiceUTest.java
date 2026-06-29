@@ -70,6 +70,24 @@ class ChatServiceUTest {
     }
 
     @Test
+    void test_createChat_whenChatAlreadyExists_thenThrowsException() {
+        UUID createdBy = UUID.randomUUID();
+        UUID participant = UUID.randomUUID();
+        List<UUID> participants = List.of(createdBy, participant);
+
+        CreateChatRequest request = new CreateChatRequest();
+        request.setCreatedBy(createdBy);
+        request.setParticipants(participants);
+
+        Chat existing = new Chat();
+        existing.setParticipants(participants);
+
+        when(chatRepository.findByParticipants(participants, participants.size())).thenReturn(Optional.of(existing));
+
+        assertThrows(RuntimeException.class, () -> chatService.createChat(request));
+    }
+
+    @Test
     void test_createChat_whenRequestProvided_thenSavesChat() {
         UUID createdBy = UUID.randomUUID();
         UUID participant = UUID.randomUUID();
