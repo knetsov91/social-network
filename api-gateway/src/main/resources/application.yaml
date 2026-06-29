@@ -18,6 +18,9 @@ spring:
       port: ${REDIS_PORT:6379}
 
   cloud:
+    loadbalancer:
+      cache:
+        ttl: 5s
     gateway:
       routes:
         - id: posts
