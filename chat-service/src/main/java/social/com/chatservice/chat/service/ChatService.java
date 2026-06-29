@@ -53,9 +53,15 @@ public class ChatService {
     }
 
     public void createChat(CreateChatRequest createChatRequest) {
+        List<UUID> participants = createChatRequest.getParticipants();
+
+        chatRepository.findByParticipants(participants, participants.size()).ifPresent(existing -> {
+            throw new RuntimeException("Chat between these participants already exists");
+        });
+
         Chat chat = new Chat();
         chat.setCreatedBy(createChatRequest.getCreatedBy());
-        chat.setParticipants(createChatRequest.getParticipants());
+        chat.setParticipants(participants);
         chat.setCreatedAt(LocalDateTime.now());
         chat.setUpdatedAt(LocalDateTime.now());
 
