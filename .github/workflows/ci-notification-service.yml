@@ -1,0 +1,25 @@
+name: CI — notification-service
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['notification-service/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['notification-service/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: notification-service
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_docker-publish.yml
+    with:
+      service: notification-service
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

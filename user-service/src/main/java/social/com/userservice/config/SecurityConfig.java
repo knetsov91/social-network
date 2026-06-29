@@ -41,13 +41,17 @@ public class SecurityConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityChain(HttpSecurity http) throws Exception {
 
        return http
-               .cors(c -> c.configurationSource(e -> corsConfiguration()))
+               .cors(c -> c.disable())
             .authorizeHttpRequests(req ->
                 req.requestMatchers("/api/v1/users/register",
                                 "/api/v1/users/login",
-                                "/api/v1/users/auth/issue"
+                                "/api/v1/users/auth/issue",
+                                "/api/v1/users",
+                                "/api/v1/users/*"
                         )
                         .permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/v1/users/*/followings").permitAll()
                         .anyRequest().authenticated()
             ).csrf(c -> c.disable())
            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

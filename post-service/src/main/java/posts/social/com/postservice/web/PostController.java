@@ -1,11 +1,13 @@
 package posts.social.com.postservice.web;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import posts.social.com.postservice.post.model.Post;
 import posts.social.com.postservice.post.service.PostService;
 import posts.social.com.postservice.web.dto.AuthorPostsResponse;
+import posts.social.com.postservice.web.dto.LikeRequest;
 import posts.social.com.postservice.web.dto.PostCreateRequest;
 import java.util.List;
 import java.util.UUID;
@@ -21,43 +23,31 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity post(@RequestHeader(name="Authorization") String authorization, @RequestBody PostCreateRequest postCreateRequest) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity post(@RequestBody PostCreateRequest postCreateRequest) {
         postService.create(postCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping
-    public ResponseEntity<List<AuthorPostsResponse>> getPosts(@RequestHeader(name="Authorization") String authorization) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        //TODO: query user service to check if authorId is valid
-        String token = authorization.split(" ")[1];
-        UUID authorId = UUID.fromString(token);
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<AuthorPostsResponse>> getUserPosts(@PathVariable UUID userId) {
+        List<Post> posts = postService.getPosts(userId);
+        return ResponseEntity.ok(Mapper.mapListPostsToListAuthorPostsResponse(posts));
+    }
 
-        List<Post> posts =  postService.getPosts(authorId);
-        List<AuthorPostsResponse> mapped = Mapper.mapListPostsToListAuthorPostsResponse(posts);
-
-        return ResponseEntity.status(HttpStatus.OK).body(mapped);
+    @GetMapping("/feed")
+    public ResponseEntity<Page<AuthorPostsResponse>> getFeed(
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        Page<Post> posts = postService.getFeed(userId, page, size);
+        return ResponseEntity.ok(posts.map(Mapper::mapPostToAuthorPostsResponse));
     }
 
     @PutMapping("/{postId}/likes")
-    public ResponseEntity like(@PathVariable("postId") UUID postId, @RequestHeader(name="Authorization") String authorization) {
-        if (!authorization.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        //TODO: query user service to check if authorId is valid
-        String token = authorization.split(" ")[1];
-        UUID userId = UUID.fromString(token);
-
-        boolean exists = postService.postLikeExists(postId, userId);
-        postService.togglePostLike(postId, userId);
-        if (exists) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity like(@PathVariable UUID postId, @RequestBody LikeRequest likeRequest) {
+        boolean liked = postService.togglePostLike(postId, likeRequest.getUserId());
+        return liked
+                ? ResponseEntity.status(HttpStatus.CREATED).build()
+                : ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

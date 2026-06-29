@@ -1,13 +1,14 @@
 package social.com.userservice.follow.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import social.com.userservice.common.TimeProvider;
 import social.com.userservice.follow.model.Follow;
 import social.com.userservice.follow.repository.FollowRepository;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class FollowService {
@@ -20,22 +21,25 @@ public class FollowService {
         this.timeProvider = timeProvider;
     }
 
+    @CacheEvict(value = "followings", key = "#followerId")
     public void follow(UUID followerId, UUID followeeId) {
-
         Follow follow = new Follow();
         follow.setFolloweeId(followeeId);
         follow.setFollowerId(followerId);
         follow.setCreatedAt(timeProvider.now());
 
-        followRepository.save(follow);
+        try {
+            followRepository.save(follow);
+        } catch (DataIntegrityViolationException ignored) {
+        }
     }
 
+    @Cacheable(value = "followings", key = "#userId")
     public List<UUID> getUserFollowings(UUID userId) {
-        Optional<List<Follow>> byFollowerId = followRepository.findByFollowerId(userId);
-        if (byFollowerId.isEmpty()) {}
-
-        return byFollowerId.get().stream()
+        return followRepository.findByFollowerId(userId)
+                .orElse(List.of())
+                .stream()
                 .map(Follow::getFolloweeId)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

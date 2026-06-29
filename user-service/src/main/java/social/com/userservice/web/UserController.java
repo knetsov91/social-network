@@ -20,13 +20,14 @@ import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.auth.service.AuthService;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.service.UserService;
-import social.com.userservice.web.dto.ErrorResponse;
-import social.com.userservice.web.dto.GetAllUsersResponse;
+import social.com.userservice.web.dto.UserResponse;
+import social.com.userservice.web.dto.LoginResponse;
 import social.com.userservice.web.dto.UserLoginRequest;
 import social.com.userservice.web.dto.UserRegisterRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -43,16 +44,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserRegisterRequest userRegisterRequest) {
-
-        if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
-            ErrorResponse errorResponse = new ErrorResponse();
-            errorResponse.setMessage("Passwords don't match");
-            errorResponse.setCode("400");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }
-        User user = userService.register(userRegisterRequest);
-
-        return ResponseEntity.ok(userRegisterRequest);
+        userService.register(userRegisterRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")
@@ -71,23 +64,32 @@ public class UserController {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(3600000)
-                .sameSite(SameSiteCookies.NONE.toString())
+                .maxAge(3600)
+                .sameSite(SameSiteCookies.STRICT.toString())
                 .build();
             response.addHeader(HttpHeaders.SET_COOKIE, responseCookie.toString());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new LoginResponse(user.getId(), user.getUsername()));
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<GetAllUsersResponse>> getAllUsers() {
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = userService.getAll();
-        List<GetAllUsersResponse> getAllUsersResponses = Mapper.mapUsersToGetAllUsersResponse(users);
-        return ResponseEntity.ok(getAllUsersResponses);
+        return ResponseEntity.ok(Mapper.mapUsersToUserResponse(users));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
+        User user = userService.getById(id);
+        return ResponseEntity.ok(new UserResponse(user.getId(), user.getUsername()));
     }
 
     @GetMapping("/is-authenticated")
     public ResponseEntity<?> isAuthenticated(HttpServletRequest req) {
-        Optional<Cookie> token = Arrays.stream(req.getCookies()).filter(c -> c.getName().equals("token")).findFirst();
+        Cookie[] cookies = req.getCookies();
+        if (cookies == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Optional<Cookie> token = Arrays.stream(cookies).filter(c -> c.getName().equals("token")).findFirst();
 
         if (token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

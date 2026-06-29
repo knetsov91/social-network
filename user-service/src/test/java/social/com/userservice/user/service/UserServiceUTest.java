@@ -13,8 +13,8 @@ import social.com.userservice.web.dto.UserRegisterRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
 import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceUTest {
@@ -40,7 +40,7 @@ class UserServiceUTest {
     }
 
     @Test
-    public void testRegister_whenUserExists_thenThrowException() {
+    public void test_register_whenUserExists_thenThrowException() {
         UserRegisterRequest userRegisterRequest = new UserRegisterRequest();
         userRegisterRequest.setPassword("password");
         userRegisterRequest.setConfirmPassword("password");
@@ -51,7 +51,7 @@ class UserServiceUTest {
     }
 
     @Test
-    public void test_happy_case() {
+    public void test_register_whenValidRequest_thenSavesUser() {
         String password = "password";
         String hashedPassword = "hashedPassword";
         String username = "username";
@@ -80,4 +80,25 @@ class UserServiceUTest {
         Assertions.assertEquals(user.getCreatedAt(), now);
     }
 
+    @Test
+    public void test_getById_whenUserFound_thenReturnsUser() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        User result = userService.getById(userId);
+
+        Assertions.assertEquals(user, result);
+    }
+
+    @Test
+    public void test_getById_whenUserNotFound_thenThrowsException() {
+        UUID userId = UUID.randomUUID();
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(RuntimeException.class, () -> userService.getById(userId));
+    }
 }

@@ -13,10 +13,32 @@ spring:
 server:
   port: 8089
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    instance:
+      preferIpAddress: true
+
 logging:
   level:
     org:
       springframework:
         security: DEBUG
 
-frontendUrl: http://localhost:5174/
+frontendUrl: http://localhost:5173
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces

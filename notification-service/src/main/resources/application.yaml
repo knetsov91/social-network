@@ -2,6 +2,14 @@ spring:
   application:
     name: notification-service
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+
+frontend:
+  url: ${FRONTEND_ORIGIN:http://localhost:5173}
+
 server:
   port: 0
 
@@ -17,3 +25,12 @@ logging:
     org.springframework.web.socket: DEBUG
     org.springframework.web.socket.server: TRACE
     org.springframework.messaging.simp: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  endpoint:
+    health:
+      show-details: always

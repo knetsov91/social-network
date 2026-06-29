@@ -1,71 +1,243 @@
-<h1>Social network</h1>
+# Social network
 
-<h2>Project overview</h2>
-<p>Project implement social network where people can create,like posts chat with other people. Microservice architecture is used where
-main functionalities related to posts, users, authentication etc. are in separate projects.
-These services are consumed from front-end SPA application implemented using React UI Javascript library.
-For data persistence SQL and NoSQL databases are used i.e. MongoDb, PostgreSQL. 
-JWT is used for authentication and authorization. Redis NoSQL datastore is used in some microservices
-as cache to offload pressure from the RDBMS. WebSocket protocol is used in some microservices for real-time communication.
-Observability is implemented by using Prometheus to collect and query
-metrics from microservices and Grafana for their visualization. Kafka is used for asynchronous communication
-between some microservices
-</p>
+## Project overview
 
-<h4>Tech stack</h4>
-<ul>
-  <li>Java 21</li>
-  <li>Spring Boot 3</li>
-  <li>Spring Security 6</li>
-  <li>React JS</li>
-  <li>PostgreSQL</li>
-  <li>MongoDb</li>
-  <li>Redis</li>
-  <li>Docker</li>
-  <li>JUnit5</li>
-  <li>WebSocket</li>
-  <li>HashiCorp Vault</li>
-  <li>Prometheus</li>
-  <li>Grafana</li>
-</ul> 
+A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
 
-<p>
-    For more information about <b>database</b> visit  
-    <a href="./docs/database.md">here</a>.<br>
-    For more information about <b>architecture</b> visit  
-    <a href="./docs/architecture.md">here</a>.
-</p>
+## Tech stack
 
-<h2>Microservices documentation</h2>
-<ul>
-    <li>User microservice (<a href="./docs/user-service/overview.md">here</a>)</li>
-    <li>Auth microservice (<a href="./docs/auth-service/overview.md">here</a>)</li>
-    <li>Post microservice (<a href="./docs/post-service/overview.md">here</a>)</li>
-    <li>Notification microservice (<a href="./docs/notification-service/overview.md">here</a>)</li>
-    <li>API Gateway microservice (<a href="./docs/api-gateway-service/overview.md">here</a>)</li>
-</ul>
+- Java 21
+- Spring Boot 3
+- Spring Security 6
+- Spring Cloud (Gateway, Eureka)
+- React JS
+- PostgreSQL
+- MySQL
+- MongoDb
+- Redis
+- Apache Kafka
+- Docker
+- JUnit5
+- WebSocket
+- HashiCorp Vault
+- Prometheus
+- Grafana
 
-<h3>Encountered problems</h3>
-<ul>
-    <li><b>Problem</b>: <b>ClassCastException</b> exception when caching posts. <br>
-        <b>Solution</b>: disable spring-boot-devtools dependency  </li>
-    <li><b>Problem</b>: When implement UserDetailsService as lambda or in UserDetails service there is circular dependency when used in OncePerRequestFilter. <br>
-        <b>Solution</b>: Implement UserDetailsService as Bean in separate class.</li>
-    <li><b>Problem</b>: When use HandlerExceptionResolver in OncePerRequestFilter there is circular dependency.<br>
-        <b>Solution</b>: Use field injection with @Lazy annotation. (<u>Temporary fix</u>)</li>
-    <li><b>Problem</b>: CORS - duplicated Access-Control-Allow-Origin in response headers. <br>
-        <b>Solution</b>: Add DedupeResponseHeader in API Gateway's <b>default-filters</b> property.</li>
-    <li><b>Problem</b>: When caching entity that contains LAZY loaded collection gives "failed to lazily initialize a collection of role: ... could not initialize proxy - no Session"<br>
-        <b>Solution</b>: Make Lazy loaded collection in Post entity as eagerly loaded.</li>
-    <li><b>Problem</b>: When build image in docker-compose.yaml give "ERROR: unable to prepare context: path "[Dockerfile-directory]/Dockerfile" not found".<br>
-        <b>Solution</b>: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.</li>
-    <li><b>Problem</b>: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: "Request execution error. endpoint=DefaultEndpoint{ serviceUrl='http://service_disc:8761/eureka/}, exception=Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE stacktrace=java.lang.IllegalStateException: Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE".<br>
-        <b>Solution</b>: Service name must not contain "-" character. </li>
-    <li><b>Problem</b>: Handling exceptions globally in CustomErrorWebExceptionHandler class return response without body.<br>
-        <b>Solution</b>: Add getters and setters for the class returned in response body. </li>
-    <li><b>Problem</b>: When using WebClient to make requests to service that use self-signed certificate gives "PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target".<br>
-        <b>Solution</b>: Configuring WebClient with a custom Truststore. </li>
-    <li><b>Problem</b>: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found (this database is empty); sql statement:".<br>
-        <b>Solution</b>: Use <b></b>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</li> instead of <b>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</b> in properties.yaml used for testing and use @Table(name="`user`") in User entity.</li>
+For more information about **database** visit [here](./docs/database.md).
+For more information about **architecture** visit [here](./docs/architecture.md).
 
-</ul>
+## Services & Ports
+
+| Service | Port | Description |
+|---|---|---|
+| api-gateway | 8085 | Entry point for all client requests; handles TLS termination, routing, and JWT validation |
+| service-discovery | 8761 | Eureka server; all microservices register here for load-balanced routing |
+| user-service | dynamic | Manages user registration, login, and follow relationships |
+| auth-service | dynamic | Issues and validates JWT tokens; maintains a token blacklist |
+| post-service | dynamic | Handles post creation, retrieval, and likes |
+| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is not yet routed through the gateway (to be fixed) |
+| notification-service | dynamic | Consumes Kafka events and pushes real-time notifications over WebSocket |
+| PostgreSQL | 5432 | Relational database for post-service |
+| MySQL | 3306 | Relational database for user-service |
+| MongoDB | 27017 | NoSQL (Document) database for chat-service |
+| Redis | 6379 | In-memory key-value store |
+| Redis Insight | 8001 | Web UI for inspecting Redis data |
+| Kafka | 9092 | Async event bus |
+| Vault | 8200 | Secrets management |
+| Prometheus | 9090 | Metrics collection (observability stack) |
+| Grafana | 3000 | Metrics dashboards (observability stack) |
+| Jaeger | 16686 | Distributed tracing UI (observability stack) |
+
+## Quick start (local)
+
+**Prerequisites:** Java 21, Docker
+
+**1. Start infrastructure**
+
+```bash
+cd infrastructure
+docker compose up -d
+```
+
+This starts PostgreSQL, MySQL, MongoDB, Kafka, Redis, and Vault.
+
+**2. Set required environment variables**
+
+Create a `.env` file at the project root:
+
+```bash
+# PostgreSQL (post-service)
+POSTGRES_USER=<POSTGRES_USER>
+POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+POSTGRES_DB=<POSTGRES_DB>
+
+# MySQL (user-service)
+MYSQL_USER=<MYSQL_USER>
+MYSQL_PASSWORD=<MYSQL_PASSWORD>
+MYSQL_DATABASE=<MYSQL_DATABASE>
+MYSQL_ROOT_PASSWORD=<MYSQL_ROOT_PASSWORD>
+DB=<DB>                     # must match MYSQL_DATABASE
+
+# MongoDB (chat-service)
+MONGODB_HOST=<MONGODB_HOST>
+MONGO_USERNAME=<MONGO_USERNAME>
+MONGO_PASSWORD=<MONGO_PASSWORD>
+MONGO_AUTH=<MONGO_AUTH>
+
+# Vault (post-service)
+VAULT_TOKEN=<VAULT_TOKEN>
+
+# JWT — auth-service signs, api-gateway validates; use the same base64-encoded secret for HMAC
+JWT_SECRET_KEY=<JWT_SECRET_KEY>
+JWT_KEY=<JWT_KEY>
+JWT_EXP_TIME=<JWT_EXP_TIME>
+
+# TLS — must match the password of the PKCS12 keystore used by api-gateway
+KEY_STORE_PASSWORD=<KEY_STORE_PASSWORD>
+WEBCLIENTJKS_KEY=<WEBCLIENTJKS_KEY>
+
+# Service discovery — hostname only, port is appended automatically
+SERVICE_DISCOVERY_HOST=<SERVICE_DISCOVERY_HOST>
+
+# Frontend
+FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
+```
+
+**3. Start services in order**
+
+> Make sure environment variables are exported before starting services — see **Encountered problems** section.
+
+```bash
+# 1 — service registry must be first
+cd service-discovery && ./gradlew bootRun
+
+# 2 — backend services (any order)
+cd user-service         && ./gradlew bootRun
+cd auth-service         && ./gradlew bootRun
+cd post-service         && ./gradlew bootRun
+cd chat-service         && ./gradlew bootRun
+cd notification-service && ./gradlew bootRun
+
+# 3 — gateway last
+cd api-gateway && ./gradlew bootRun
+```
+
+**4. (Optional) Start observability stack**
+
+```bash
+cd infrastructure/observability
+docker compose up -d   # Prometheus :9090, Grafana :3000
+```
+
+## Authentication
+
+All requests are routed through the API Gateway. Authentication is cookie-based — the client never handles the JWT directly.
+
+**Flow:**
+
+1. **Register** — `POST /api/v1/users/register` with `username`, `password`, and `confirmPassword`. No authentication required.
+2. **Login** — `POST /api/v1/users/login` with `username` and `password`. On success the gateway sets an `HttpOnly`, `Secure`, `SameSite=None` cookie named `token` containing a signed JWT. The cookie is valid for 1 hour.
+3. **Authenticated requests** — Every subsequent request must include the `token` cookie. The API Gateway's `AuthFilter` intercepts every request, reads the cookie, and calls the auth-service to validate the token (checking signature, expiry, and the blacklist stored in Redis). If the token is missing or invalid the gateway immediately returns `401 Unauthorized` without forwarding the request downstream.
+4. **Token issuance** — Tokens are issued exclusively by auth-service. When the user logs in, user-service authenticates the credentials and then calls `POST /api/v1/tokens/issue` on auth-service through the gateway. Auth-service signs the JWT with `JWT_SECRET_KEY` using HMAC-SHA256 and returns it to user-service, which sets it as the response cookie.
+5. **Invalidation** — A token can be blacklisted by calling `POST /api/v1/tokens/invalidate`. Blacklisted tokens are stored in Redis and rejected by auth-service on every subsequent validation request even if the JWT has not yet expired.
+
+**Public endpoints** (no token required):
+
+```
+POST  /api/v1/users/register   Register a new user
+POST  /api/v1/users/login      Login and receive token cookie
+POST  /api/v1/tokens/**        Token operations (issue, validate, invalidate, is-invalidated)
+```
+
+All other endpoints require a valid `token` cookie.
+
+## Running tests
+
+**Unit tests** — no infrastructure required:
+
+```bash
+# From any service directory
+./gradlew test --tests "**.*UTest"
+```
+
+**Integration tests** — require PostgreSQL and Redis running. Before running post-service integration tests, create the test database:
+
+```bash
+docker exec <postgres-container> psql -U $POSTGRES_USER -c "CREATE DATABASE posts_test;"
+```
+
+Then run from the service directory:
+
+```bash
+./gradlew test --tests "**.*ITTest"
+```
+
+Integration tests use a dedicated database (`posts_test`) to avoid touching the main database. Each test rolls back its writes via `@Transactional` so tests don't affect each other.
+
+## CI
+
+Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to `main` and `dev` when files within that service's directory change.
+
+All workflows delegate to a shared reusable workflow (`.github/workflows/_gradle-build.yml`) that runs on `ubuntu-latest` with Java 21 (Temurin) and executes a single step:
+
+```bash
+./gradlew test --tests "**.*UTest"
+```
+
+This compiles the service and runs unit tests. The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+
+## Microservices documentation
+
+- User microservice ([here](./docs/user-service/overview.md))
+- Auth microservice ([here](./docs/auth-service/overview.md))
+- Post microservice ([here](./docs/post-service/overview.md))
+- Chat microservice ([here](./docs/chat-service/overview.md))
+- Notification microservice ([here](./docs/notification-service/overview.md))
+- API Gateway microservice ([here](./docs/api-gateway-service/overview.md))
+
+### Encountered problems
+
+- **Problem**: **ClassCastException** exception when caching posts.
+  **Solution**: disable spring-boot-devtools dependency.
+
+- **Problem**: When implement UserDetailsService as lambda or in UserDetails service there is circular dependency when used in OncePerRequestFilter.
+  **Solution**: Implement UserDetailsService as Bean in separate class.
+
+- **Problem**: When use HandlerExceptionResolver in OncePerRequestFilter there is circular dependency.
+  **Solution**: Use field injection with @Lazy annotation. (*Temporary fix*)
+
+- **Problem**: CORS - duplicated Access-Control-Allow-Origin in response headers.
+  **Solution**: Add DedupeResponseHeader in API Gateway's **default-filters** property.
+
+- **Problem**: When caching entity that contains LAZY loaded collection gives "failed to lazily initialize a collection of role: ... could not initialize proxy - no Session".
+  **Solution**: Make Lazy loaded collection in Post entity as eagerly loaded.
+
+- **Problem**: When build image in docker-compose.yaml give "ERROR: unable to prepare context: path "[Dockerfile-directory]/Dockerfile" not found".
+  **Solution**: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.
+
+- **Problem**: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: "Could not create URI object: Illegal character in hostname at index 14: http://service_disc:8761/eureka/apps/GATEWAY-SERVICE".
+  **Solution**: Service name must not contain "-" character.
+
+- **Problem**: Handling exceptions globally in CustomErrorWebExceptionHandler class return response without body.
+  **Solution**: Add getters and setters for the class returned in response body.
+
+- **Problem**: When using WebClient to make requests to service that use self-signed certificate gives "PKIX path building failed: unable to find valid certification path to requested target".
+  **Solution**: Configuring WebClient with a custom Truststore.
+
+- **Problem**: During integration test with H2 in-memory database get "h2 could not prepare statement [table "user" not found]".
+  **Solution**: Use `spring.jpa.database-platform=org.hibernate.dialect.H2Dialect` instead of `spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect` in properties.yaml used for testing and use `@Table(name="`user`")` in User entity.
+
+- **Problem**: Environment variables from `.env` are not visible to services started with `./gradlew bootRun` — Spring fails to resolve placeholders like `${KEY_STORE_PASSWORD}`.
+  **Solution**: Source the `.env` file with `set -a` so all variables are automatically exported to child processes: `set -a && source .env && set +a`.
+
+- **Problem**: Individual services (e.g. user-service) return 403 on requests forwarded by the API Gateway due to hardcoded CORS origin restrictions in their own `SecurityConfig`.
+  **Solution**: Disable CORS in individual service security configs (`.cors(c -> c.disable())`). Services sit behind the gateway and never receive direct browser requests, so CORS enforcement belongs exclusively to the gateway.
+
+- **Problem**: CORS preflight (`OPTIONS`) requests to the API Gateway return 403 with `Access-Control-Allow-Origin` header missing.
+  **Solution**: Define an explicit `CorsConfigurationSource` bean in `SecurityConfig`. Without it, Spring Security's `.cors(Customizer.withDefaults())` has nothing to bind its `CorsWebFilter` to, so preflight requests fall through to the router and get forwarded downstream without CORS headers. Also, add an `OPTIONS` method check at the top of `AuthFilter` to skip token validation for preflight requests — browsers send `OPTIONS` without cookies, so without this check preflights on protected routes are rejected with 401 before CORS headers can be added.
+
+- **Problem**: After a service restart, `GET /api/v1/users` returns 400 with "Unrecognized field 'enabled'" when the response is served from Redis cache.
+  **Solution**: Add `@JsonIgnore` to all `UserDetails` interface methods (`isEnabled`, `isAccountNonExpired`, `isAccountNonLocked`, `isCredentialsNonExpired`, `getAuthorities`) in the `User` entity. These methods are serialized by Jackson as fields when caching but have no corresponding setters to deserialize back into, causing the mismatch. Adding setters would also fix deserialization but is the wrong approach — these are Spring Security interface methods that do not belong to the domain model, so caching them is redundant. `@JsonIgnore` prevents them from being cached at all.
+
+- **Problem**: Frontend cannot read 401 responses from the API Gateway on cross-origin requests — the browser blocks the response even though the status code is returned correctly.
+  **Solution**: Add `Access-Control-Allow-Origin` and `Access-Control-Allow-Credentials` CORS headers to 401 responses in `AuthFilter`. Any cross-origin request sent with credentials (cookies, Authorization header) requires these headers on every response, including error responses, for the browser to expose them to frontend JavaScript.

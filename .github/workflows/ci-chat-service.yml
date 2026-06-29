@@ -1,0 +1,25 @@
+name: CI — chat-service
+
+on:
+  push:
+    branches: [main, dev]
+    paths: ['chat-service/**']
+  pull_request:
+    branches: [main, dev]
+    paths: ['chat-service/**']
+
+jobs:
+  build:
+    uses: ./.github/workflows/_gradle-build.yml
+    with:
+      service: chat-service
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_docker-publish.yml
+    with:
+      service: chat-service
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

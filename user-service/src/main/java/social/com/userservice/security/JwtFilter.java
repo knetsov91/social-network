@@ -1,6 +1,6 @@
 package social.com.userservice.security;
 
-import feign.FeignException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +21,8 @@ import social.com.userservice.auth.client.dto.TokenValidationRequest;
 import social.com.userservice.auth.service.AuthService;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -30,6 +32,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private HandlerExceptionResolver handlerExceptionResolver;
     private AuthService authService;
     private UserDetailsService userDetailsService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public JwtFilter(AuthService authService, UserDetailsService userDetailsService) {
         this.authService = authService;
         this.userDetailsService = userDetailsService;
@@ -52,14 +56,14 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         try {
             String jwtToken = token.get().getValue();
-            ResponseEntity responseEntity = authService.validateToken(new TokenValidationRequest(jwtToken));
+            authService.validateToken(new TokenValidationRequest(jwtToken));
             ResponseEntity tokenInvalidatedCheck = authService.checkIfInvalidated(jwtToken);
             if (tokenInvalidatedCheck.getStatusCode().value() == 200) {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                UserDetails u1 = userDetailsService.loadUserByUsername("u1");
                 if (authentication == null) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(u1, null, u1.getAuthorities());
-
+                    String username = extractUsername(jwtToken);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
@@ -67,6 +71,12 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             handlerExceptionResolver.resolveException(request, response, null, e);
         }
+    }
 
+    private String extractUsername(String token) throws Exception {
+        String payload = token.split("\\.")[1];
+        byte[] decoded = Base64.getUrlDecoder().decode(payload);
+        Map<String, Object> claims = objectMapper.readValue(decoded, Map.class);
+        return (String) claims.get("sub");
     }
 }

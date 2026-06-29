@@ -1,7 +1,10 @@
 package social.com.userservice.user.service;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import social.com.userservice.user.model.User;
 import social.com.userservice.user.repository.UserRepository;
 import social.com.userservice.web.dto.UserRegisterRequest;
@@ -9,6 +12,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService{
@@ -21,6 +25,8 @@ public class UserService{
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public User register(UserRegisterRequest userRegisterRequest) {
 
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getConfirmPassword())) {
@@ -40,7 +46,13 @@ public class UserService{
         return userRepository.save(user);
     }
 
+    @Cacheable("users")
     public List<User> getAll() {
         return userRepository.findAll();
+    }
+
+    public User getById(UUID id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User with id " + id + " not found"));
     }
 }

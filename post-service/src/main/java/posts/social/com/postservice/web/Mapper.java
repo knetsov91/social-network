@@ -10,15 +10,28 @@ import java.util.List;
 @UtilityClass
 public class Mapper {
 
+    public static AuthorPostsResponse mapPostToAuthorPostsResponse(Post post) {
+        return AuthorPostsResponse.builder()
+                .id(post.getId())
+                .authorId(post.getAuthorId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .likes(post.getLikes())
+                .createdAt(post.getCreatedAt())
+                .build();
+    }
+
     public static List<AuthorPostsResponse> mapListPostsToListAuthorPostsResponse(List<Post> posts) {
         List<AuthorPostsResponse> authorPostsResponses = new ArrayList<>();
 
         posts.forEach(post -> {
             AuthorPostsResponse mapped = AuthorPostsResponse.builder()
+                    .id(post.getId())
                     .authorId(post.getAuthorId())
                     .title(post.getTitle())
                     .content(post.getContent())
                     .likes(post.getLikes())
+                    .createdAt(post.getCreatedAt())
                     .build();
             authorPostsResponses.add(mapped);
         });
