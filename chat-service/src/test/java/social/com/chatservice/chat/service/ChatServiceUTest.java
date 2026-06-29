@@ -88,13 +88,16 @@ class ChatServiceUTest {
     }
 
     @Test
-    void test_createChat_whenRequestProvided_thenSavesChat() {
+    void test_createChat_whenNoChatExists_thenSavesChat() {
         UUID createdBy = UUID.randomUUID();
         UUID participant = UUID.randomUUID();
+        List<UUID> participants = List.of(createdBy, participant);
 
         CreateChatRequest request = new CreateChatRequest();
         request.setCreatedBy(createdBy);
-        request.setParticipants(List.of(participant));
+        request.setParticipants(participants);
+
+        when(chatRepository.findByParticipants(participants, participants.size())).thenReturn(Optional.empty());
 
         chatService.createChat(request);
 
@@ -102,7 +105,7 @@ class ChatServiceUTest {
         verify(chatRepository).save(captor.capture());
 
         assertEquals(createdBy, captor.getValue().getCreatedBy());
-        assertEquals(List.of(participant), captor.getValue().getParticipants());
+        assertEquals(participants, captor.getValue().getParticipants());
     }
 
     @Test
