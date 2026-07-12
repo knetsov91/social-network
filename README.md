@@ -35,7 +35,7 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | user-service | dynamic | Manages user registration, login, and follow relationships |
 | auth-service | dynamic | Issues and validates JWT tokens; maintains a token blacklist |
 | post-service | dynamic | Handles post creation, retrieval, and likes |
-| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is not yet routed through the gateway (to be fixed) |
+| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is routed through the gateway |
 | notification-service | dynamic | Consumes Kafka events and pushes real-time notifications over WebSocket |
 | PostgreSQL | 5432 | Relational database for post-service |
 | MySQL | 3306 | Relational database for user-service |
