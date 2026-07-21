@@ -1,10 +1,21 @@
 spring:
+  config:
+    import: "vault://"
   data:
     redis:
       host: localhost
       port: 6379
   application:
     name: auth-service
+  cloud:
+    vault:
+      uri: http://127.0.0.1:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 server:
   port: 0
 
@@ -14,10 +25,6 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     instance:
       preferIpAddress: true
-
-jwt:
-  expiration-time: ${JWT_EXP_TIME}
-  secret-key: ${JWT_SECRET_KEY}
 
 management:
   endpoints:
