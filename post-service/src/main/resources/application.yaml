@@ -81,7 +81,6 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
 
 sentry:
-  dsn: ${SENTRY_DSN}
   send-default-pii: true
   logs:
     enabled: true
