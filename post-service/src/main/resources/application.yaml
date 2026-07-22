@@ -2,6 +2,9 @@ spring:
   application:
     name: post-service
 
+  config:
+    import: "vault://"
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -10,8 +13,6 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5435/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
 
   jpa:
     show-sql: true
@@ -38,7 +39,7 @@ spring:
       scheme: http
       kv:
         enabled: true
-        default-context: secret
+        kv-version: 2
       fail-fast: true
 
 server:
@@ -80,7 +81,6 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 3
 
 sentry:
-  dsn: ${SENTRY_DSN}
   send-default-pii: true
   logs:
     enabled: true
