@@ -84,10 +84,11 @@ MONGO_USERNAME=<MONGO_USERNAME>
 MONGO_PASSWORD=<MONGO_PASSWORD>
 MONGO_AUTH=<MONGO_AUTH>
 
-# Vault (post-service)
+# Vault (post-service, auth-service)
 VAULT_TOKEN=<VAULT_TOKEN>
 
 # JWT — auth-service signs, api-gateway validates; use the same base64-encoded secret for HMAC
+# JWT_SECRET_KEY and JWT_EXP_TIME are stored in Vault and read from there by auth-service, not env vars
 JWT_SECRET_KEY=<JWT_SECRET_KEY>
 JWT_KEY=<JWT_KEY>
 JWT_EXP_TIME=<JWT_EXP_TIME>
@@ -103,7 +104,15 @@ SERVICE_DISCOVERY_HOST=<SERVICE_DISCOVERY_HOST>
 FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
 ```
 
-**3. Start services in order**
+**3. Seed secrets into Vault**
+
+```bash
+./infrastructure/vault/seed.sh
+```
+
+Writes the DB credentials, JWT secret, and Sentry DSN into `secret/post-service` and `secret/auth-service`. Required before starting those two services — both fail to start without their secrets present in Vault.
+
+**4. Start services in order**
 
 > Make sure environment variables are exported before starting services — see **Encountered problems** section.
 
@@ -122,7 +131,7 @@ cd notification-service && ./gradlew bootRun
 cd api-gateway && ./gradlew bootRun
 ```
 
-**4. (Optional) Start observability stack**
+**5. (Optional) Start observability stack**
 
 ```bash
 cd infrastructure/observability
