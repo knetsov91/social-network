@@ -184,6 +184,15 @@ Then run from the service directory:
 
 Integration tests use a dedicated database (`posts_test`) to avoid touching the main database. Each test rolls back its writes via `@Transactional` so tests don't affect each other.
 
+**Performance tests** — K6 scripts in **k6/**, run via the **grafana/k6** Docker image against an already-running stack. In local development services run directly on the host via **./gradlew bootRun** (not in Docker), so the k6 container needs **--network host** to reach them at **localhost**; if the stack is deployed in Docker instead, drop **--network host** and point **BASE_URL** at the containers' network:
+
+```bash
+docker run --rm --network host -v $(pwd)/k6:/scripts grafana/k6 run /scripts/<script>.js
+```
+
+- **rate-limiting.js** — spikes traffic against the API Gateway to trigger the Redis token bucket rate limiter, verifying requests get throttled with **429** once the burst capacity is exceeded and recover once the rate drops.
+- **circuit-breaker.js** — repeatedly calls **GET /api/v1/posts/feed** while user-service is killed and restarted mid-run, verifying the post-service → user-service Resilience4j circuit breaker falls back to an empty feed instead of erroring when user-service is unreachable.
+
 ## CI
 
 Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to `main` and `dev` when files within that service's directory change.
