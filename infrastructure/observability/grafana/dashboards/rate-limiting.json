@@ -1,20 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__requires": [
-    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "10.0.0" },
-    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "1.0.0" },
-    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
-    { "type": "panel", "id": "stat", "name": "Stat", "version": "" }
-  ],
   "annotations": {
     "list": [
       {
@@ -38,7 +22,7 @@
       "id": 1,
       "type": "timeseries",
       "title": "Request rate by status — $routeId ($httpMethod)",
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
       "targets": [
         {
@@ -81,7 +65,7 @@
       "type": "stat",
       "title": "Throttle ratio (last 30s)",
       "description": "429 responses as a percentage of total traffic to the selected route(s) over the last 30s",
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 6, "x": 0, "y": 8 },
       "targets": [
         {
@@ -119,7 +103,7 @@
       "type": "stat",
       "title": "Allowed vs throttled (cumulative)",
       "description": "Raw counter totals since Prometheus started scraping",
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 6, "x": 6, "y": 8 },
       "targets": [
         {
@@ -160,7 +144,7 @@
       "type": "timeseries",
       "title": "Avg latency by status — $routeId ($httpMethod)",
       "description": "spring_cloud_gateway_requests_seconds_sum / count, per status code",
-      "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
         {
@@ -208,7 +192,7 @@
         "name": "routeId",
         "label": "Route",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
         "query": { "query": "label_values(spring_cloud_gateway_requests_seconds_count, routeId)", "refId": "routeIdVariable" },
         "refresh": 2,
         "multi": true,
@@ -220,7 +204,7 @@
         "name": "httpMethod",
         "label": "HTTP method",
         "type": "query",
-        "datasource": { "type": "prometheus", "uid": "${DS_PROMETHEUS}" },
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
         "query": { "query": "label_values(spring_cloud_gateway_requests_seconds_count{routeId=~\"$routeId\"}, httpMethod)", "refId": "httpMethodVariable" },
         "refresh": 2,
         "multi": true,
