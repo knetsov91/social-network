@@ -18,6 +18,7 @@ A social network backend built as independent microservices using Spring Boot 3 
 - Apache Kafka
 - Docker
 - JUnit5
+- K6 (performance testing, JavaScript)
 - WebSocket
 - HashiCorp Vault
 - Prometheus
