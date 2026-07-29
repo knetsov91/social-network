@@ -6,18 +6,6 @@ spring:
     url: jdbc:mysql://localhost:3306/${DB}?sslMode=DISABLED&allowPublicKeyRetrieval=true
     username: ${MYSQL_USER}
     password: ${MYSQL_PASSWORD}
-  ssl:
-    bundle:
-      jks:
-        client:
-          keystore:
-            location: classpath:keystore/ko2.p12
-            password: ${KEY_STORE_PASSWORD}
-            type: PKCS12
-          truststore:
-            location: classpath:keystore/ko2.p12
-            password: ${KEY_STORE_PASSWORD}
-            type: PKCS12
 
   data:
     redis:
@@ -50,9 +38,6 @@ logging:
     org:
       springframework:
         security: DEBUG
-auth:
-  url: https://localhost:8085/api/v1/tokens
-
 frontend:
   url: http://localhost:5174
 

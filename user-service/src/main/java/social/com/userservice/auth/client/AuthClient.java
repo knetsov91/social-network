@@ -8,14 +8,14 @@ import social.com.userservice.auth.client.dto.TokenIssueRequest;
 import social.com.userservice.auth.client.dto.TokenIssueResponse;
 import social.com.userservice.auth.client.dto.TokenValidationRequest;
 
-@FeignClient(name="auth-svc", url="${auth.url}")
+@FeignClient(name = "auth-service")
 public interface AuthClient {
-    @PostMapping("/issue")
+    @PostMapping("/api/v1/tokens/issue")
     ResponseEntity<TokenIssueResponse> issueToken(@RequestBody TokenIssueRequest tokenIssueRequest);
 
-    @PostMapping("/validate")
+    @PostMapping("/api/v1/tokens/validate")
     ResponseEntity validateToken(@RequestBody TokenValidationRequest tokenValidationRequest);
 
-    @PostMapping("/is-invalidated")
+    @PostMapping("/api/v1/tokens/is-invalidated")
     ResponseEntity isInvalidated(@RequestBody TokenValidationRequest token);
 }
