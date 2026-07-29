@@ -43,7 +43,10 @@ services:
   kafka:
     image: apache/kafka:4.0.0
     ports:
-      - "9092:9092"  
+      - "9092:9092"
+    volumes:
+      - social_network_kafka_data:/tmp/kraft-combined-logs
+
   redis:
     image: redis/redis-stack
     ports:
@@ -65,3 +68,4 @@ volumes:
   social_network_db_data:
   social_network_users_db_data:
   social_network_chat_db_data:
+  social_network_kafka_data:
