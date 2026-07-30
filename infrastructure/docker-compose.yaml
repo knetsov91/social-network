@@ -42,10 +42,20 @@ services:
 
   kafka:
     image: apache/kafka:4.0.0
+    hostname: kafka
     ports:
       - "9092:9092"
     volumes:
       - social_network_kafka_data:/tmp/kraft-combined-logs
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    command: ["--kafka.server=kafka:9092"]
+    restart: on-failure
+    ports:
+      - "9308:9308"
+    depends_on:
+      - kafka
 
   redis:
     image: redis/redis-stack
