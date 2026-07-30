@@ -12,7 +12,7 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5435/${POSTGRES_DB}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5435}/${POSTGRES_DB}
 
   jpa:
     show-sql: true
@@ -34,7 +34,7 @@ spring:
             connectTimeout: 2000
             readTimeout: 3000
     vault:
-      uri: http://127.0.0.1:8200
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
       token: ${VAULT_TOKEN}
       scheme: http
       kv:
@@ -48,7 +48,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${SERVICE_DISCOVERY_HOST}:8761/eureka
     instance:
       preferIpAddress: true
 
