@@ -42,10 +42,20 @@ services:
 
   kafka:
     image: apache/kafka:4.0.0
+    hostname: kafka
     ports:
       - "9092:9092"
     volumes:
       - social_network_kafka_data:/tmp/kraft-combined-logs
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    command: ["--kafka.server=kafka:9092"]
+    restart: on-failure
+    ports:
+      - "9308:9308"
+    depends_on:
+      - kafka
 
   redis:
     image: redis/redis-stack
@@ -74,6 +84,7 @@ services:
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
       REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     ports:
       - "8085:8085"
     depends_on:
@@ -87,6 +98,7 @@ services:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
       VAULT_HOST: ${VAULT_HOST}
       REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
       - vault
@@ -115,6 +127,7 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
       - redis
