@@ -84,6 +84,7 @@ services:
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
       REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     ports:
       - "8085:8085"
     depends_on:
@@ -97,6 +98,7 @@ services:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
       VAULT_HOST: ${VAULT_HOST}
       REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
       - vault
@@ -125,6 +127,7 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
       - redis
