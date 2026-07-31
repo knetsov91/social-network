@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 RUN chmod +x ./gradlew
-RUN ./gradlew
+RUN ./gradlew bootJar
 
 FROM amazoncorretto:21-alpine-jdk
 WORKDIR /app
