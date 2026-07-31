@@ -57,6 +57,18 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 
 Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service.
 
+### Jaeger distributed tracing
+
+Traces captured by repeatedly logging in and following another user through the API Gateway.
+
+![Jaeger UI trace search results, filtered to gateway-service / HTTP POST](./assets/jaeger-trace-search.png)
+
+Search results filtered to `Service=gateway-service, Operation=HTTP POST`, showing a list of traces that each span both `gateway-service` and `user-service`.
+
+![Jaeger UI trace detail view showing span nesting from gateway-service into user-service](./assets/jaeger-trace-detail.png)
+
+Opening one of those traces shows the span nesting from the gateway down into user-service, for a single follow request.
+
 ## Quick start (local)
 
 **Prerequisites:** Java 21, Docker
