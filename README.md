@@ -49,6 +49,32 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | Grafana | 3000 | Metrics dashboards (observability stack) |
 | Jaeger | 16686 | Distributed tracing UI (observability stack) |
 
+## Demos
+
+### JVM metrics dashboard
+
+[assets/jvm-metrics-demo.webm](./assets/jvm-metrics-demo.webm)
+
+Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service.
+
+### API Gateway rate limiting
+
+[assets/rate-limiting-demo.webm](./assets/rate-limiting-demo.webm)
+
+k6 spike test against the API Gateway's Redis-backed token bucket rate limiter (10 req/s sustained, burst of 20), watched live in Grafana. Traffic ramps past that budget, triggering `429` responses until the rate drops back under the limit and the bucket recovers.
+
+### Jaeger distributed tracing
+
+Traces captured by repeatedly logging in and following another user through the API Gateway.
+
+![Jaeger UI trace search results, filtered to gateway-service / HTTP POST](./assets/jaeger-trace-search.png)
+
+Search results filtered to `Service=gateway-service, Operation=HTTP POST`, showing a list of traces that each span both `gateway-service` and `user-service`.
+
+![Jaeger UI trace detail view showing span nesting from gateway-service into user-service](./assets/jaeger-trace-detail.png)
+
+Opening one of those traces shows the span nesting from the gateway down into user-service, for a single follow request.
+
 ## Quick start (local)
 
 **Prerequisites:** Java 21, Docker
