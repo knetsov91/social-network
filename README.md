@@ -49,6 +49,14 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | Grafana | 3000 | Metrics dashboards (observability stack) |
 | Jaeger | 16686 | Distributed tracing UI (observability stack) |
 
+## Demos
+
+### JVM metrics dashboard
+
+[assets/jvm-metrics-demo.webm](./assets/jvm-metrics-demo.webm)
+
+Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service.
+
 ## Quick start (local)
 
 **Prerequisites:** Java 21, Docker
