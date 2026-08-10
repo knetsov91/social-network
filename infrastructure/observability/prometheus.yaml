@@ -3,7 +3,7 @@ scrape_configs:
     metrics_path: '/metrics'
     scrape_interval: 15s
     static_configs:
-      - targets: ["localhost:9308"]
+      - targets: ["kafka-exporter:9308"]
         labels:
           application: "kafka"
 
@@ -14,7 +14,7 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
     static_configs:
-      - targets: ["localhost:8085"]
+      - targets: ["api-gateway:8085"]
         labels:
           application: "api-gateway"
 
@@ -22,7 +22,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     eureka_sd_configs:
-      - server: http://localhost:8761/eureka
+      - server: http://service-discovery:8761/eureka
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         regex: AUTH-SERVICE
@@ -37,7 +37,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     eureka_sd_configs:
-      - server: http://localhost:8761/eureka
+      - server: http://service-discovery:8761/eureka
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         regex: USER-SERVICE
@@ -52,7 +52,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     eureka_sd_configs:
-      - server: http://localhost:8761/eureka
+      - server: http://service-discovery:8761/eureka
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         regex: POST-SERVICE
@@ -67,7 +67,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     eureka_sd_configs:
-      - server: http://localhost:8761/eureka
+      - server: http://service-discovery:8761/eureka
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         regex: NOTIFICATION-SERVICE
@@ -82,7 +82,7 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     eureka_sd_configs:
-      - server: http://localhost:8761/eureka
+      - server: http://service-discovery:8761/eureka
     relabel_configs:
       - source_labels: [__meta_eureka_app_name]
         regex: CHAT-SERVICE
@@ -97,6 +97,6 @@ scrape_configs:
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ["localhost:8761"]
+      - targets: ["service-discovery:8761"]
         labels:
           application: "service-discovery"
