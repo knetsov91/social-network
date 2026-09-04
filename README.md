@@ -1,9 +1,5 @@
 # Social network
 
-## Project overview
-
-A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
-
 ## Table of contents
 
 - [Project overview](#project-overview)
@@ -17,6 +13,10 @@ A social network backend built as independent microservices using Spring Boot 3 
 - [CI](#ci)
 - [Microservices documentation](#microservices-documentation)
   - [Encountered problems](#encountered-problems)
+
+## Project overview
+
+A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
 
 ## Highlights
 
