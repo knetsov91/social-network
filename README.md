@@ -4,6 +4,15 @@
 
 A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
 
+## Highlights
+
+- **Transactional outbox** for exactly-once-style Kafka publishing from post-service — no events lost on a crash between DB commit and broker send ([ADR 003](./docs/decisions/003-transactional-outbox.md))
+- **Cookie-based JWT auth** with a Redis-backed blacklist for instant invalidation, validated centrally at the gateway before any request reaches a service
+- **Redis token-bucket rate limiting** and a **Resilience4j circuit breaker**, both proven under k6 load tests, not just implemented (see [Demos](#demos))
+- **Full distributed tracing** (OpenTelemetry → Jaeger) and custom **Prometheus/Grafana** dashboards across every service, including JVM and Kafka broker metrics
+- **Real-time chat and notifications** via STOMP over WebSocket and Kafka, routed through a single API Gateway entry point for both HTTP and WebSocket traffic
+- **Database-per-service** (PostgreSQL, MySQL, MongoDB) with secrets centralized in HashiCorp Vault instead of env vars
+
 ## Tech stack
 
 - Java 21
