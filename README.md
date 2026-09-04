@@ -13,6 +13,20 @@ A social network backend built as independent microservices using Spring Boot 3 
 - **Real-time chat and notifications** via STOMP over WebSocket and Kafka, routed through a single API Gateway entry point for both HTTP and WebSocket traffic
 - **Database-per-service** (PostgreSQL, MySQL, MongoDB) with secrets centralized in HashiCorp Vault instead of env vars
 
+## Table of contents
+
+- [Project overview](#project-overview)
+- [Highlights](#highlights)
+- [Tech stack](#tech-stack)
+- [Services & Ports](#services--ports)
+- [Demos](#demos)
+- [Quick start (local)](#quick-start-local)
+- [Authentication](#authentication)
+- [Running tests](#running-tests)
+- [CI](#ci)
+- [Microservices documentation](#microservices-documentation)
+  - [Encountered problems](#encountered-problems)
+
 ## Tech stack
 
 - Java 21
