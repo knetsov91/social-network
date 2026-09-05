@@ -264,6 +264,8 @@ The `*UTest` filter excludes Spring context load tests and integration tests tha
 
 Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets.
 
+For the full pipeline breakdown see [docs/ci-cd.md](./docs/ci-cd.md). For the git workflow behind it — branch naming, commit format, when `dev` gets PR'd into `main` — see [docs/branching.md](./docs/branching.md).
+
 ## Microservices documentation
 
 - **User microservice** ([overview](./docs/user-service/overview.md))
