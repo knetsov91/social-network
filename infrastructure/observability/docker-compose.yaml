@@ -1,10 +1,16 @@
 version: '3.7'
 
+networks:
+  default:
+    name: social-network_default
+    external: true
+
 services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
-    network_mode: host
+    ports:
+      - "9090:9090"
     volumes:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
 
@@ -27,8 +33,9 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
-    network_mode: host
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     volumes:
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
