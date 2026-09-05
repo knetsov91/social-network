@@ -3,7 +3,13 @@
 <!-- badges:start -->
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
-[![api-gateway CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-api-gateway.yml?branch=main&label=api-gateway%20CI)](https://github.com/knetsov91/social-network/actions/workflows/ci-api-gateway.yml)
+[![api-gateway CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-api-gateway.yml?branch=main&label=api-gateway)](https://github.com/knetsov91/social-network/actions/workflows/ci-api-gateway.yml)
+[![auth-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-auth-service.yml?branch=main&label=auth-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-auth-service.yml)
+[![user-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-user-service.yml?branch=main&label=user-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-user-service.yml)
+[![post-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-post-service.yml?branch=main&label=post-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-post-service.yml)
+[![chat-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-chat-service.yml?branch=main&label=chat-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-chat-service.yml)
+[![notification-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-notification-service.yml?branch=main&label=notification-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-notification-service.yml)
+[![service-discovery CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-service-discovery.yml?branch=main&label=service-discovery)](https://github.com/knetsov91/social-network/actions/workflows/ci-service-discovery.yml)
 <!-- badges:end -->
 
 ## Table of contents
