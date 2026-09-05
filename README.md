@@ -1,5 +1,10 @@
 # Social network
 
+<!-- badges:start -->
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+<!-- badges:end -->
+
 ## Table of contents
 
 - [Project overview](#project-overview)
