@@ -189,6 +189,8 @@ cd infrastructure/observability
 docker compose up -d   # Prometheus :9090, Grafana :3000
 ```
 
+See [docs/observability.md](./docs/observability.md) for what's actually collected — custom metrics, dashboards, and tracing setup.
+
 ## Authentication
 
 All requests are routed through the API Gateway. Authentication is cookie-based — the client never handles the JWT directly.
