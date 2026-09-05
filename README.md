@@ -266,12 +266,20 @@ Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets.
 
 ## Microservices documentation
 
-- User microservice ([here](./docs/user-service/overview.md))
-- Auth microservice ([here](./docs/auth-service/overview.md))
-- Post microservice ([here](./docs/post-service/overview.md))
-- Chat microservice ([here](./docs/chat-service/overview.md))
-- Notification microservice ([here](./docs/notification-service/overview.md))
-- API Gateway microservice ([here](./docs/api-gateway-service/overview.md))
+- **User microservice** ([overview](./docs/user-service/overview.md))
+  - [API](./docs/user-service/api/api.md)
+  - [Database](./docs/user-service/database/database.md)
+  - [Functional requirements](./docs/user-service/functional_requirements.md)
+- **Auth microservice** ([overview](./docs/auth-service/overview.md))
+  - [API](./docs/auth-service/api/api.md)
+- **Post microservice** ([overview](./docs/post-service/overview.md))
+  - [API](./docs/post-service/api/api.md)
+  - [Database](./docs/post-service/database/database.md)
+- **Chat microservice** ([overview](./docs/chat-service/overview.md))
+- **Notification microservice** ([overview](./docs/notification-service/overview.md))
+- **API Gateway microservice** ([overview](./docs/api-gateway-service/overview.md))
+  - [Routes](./docs/api-gateway-service/routes/routes.md)
+  - [Security](./docs/api-gateway-service/security/security.md)
 
 ## Architecture decisions
 
