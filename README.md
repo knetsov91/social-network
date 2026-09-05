@@ -12,7 +12,8 @@
 - [Running tests](#running-tests)
 - [CI](#ci)
 - [Microservices documentation](#microservices-documentation)
-  - [Encountered problems](#encountered-problems)
+- [Architecture decisions](#architecture-decisions)
+- [Encountered problems](#encountered-problems)
 
 ## Project overview
 
@@ -272,7 +273,14 @@ Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets.
 - Notification microservice ([here](./docs/notification-service/overview.md))
 - API Gateway microservice ([here](./docs/api-gateway-service/overview.md))
 
-### Encountered problems
+## Architecture decisions
+
+- [ADR 001 — Cookie-based JWT authentication](./docs/decisions/001-cookie-based-jwt-auth.md) — HttpOnly cookie over an `Authorization` header, so the React SPA never handles the JWT directly
+- [ADR 002 — Idempotent follow via DB unique constraint](./docs/decisions/002-idempotent-follow-via-db-constraint.md) — a DB-level unique constraint instead of an application-level existence check to make duplicate follow requests a no-op
+- [ADR 003 — Transactional outbox in post-service](./docs/decisions/003-transactional-outbox.md) — an outbox table and poller instead of Debezium CDC, so a crash between the DB commit and the Kafka publish can't silently drop a notification
+- [ADR 004 — HashiCorp Vault for secrets management](./docs/decisions/004-vault-secrets-management.md) — post-service and auth-service pull secrets from Vault at startup instead of plain env vars, with no access control or audit trail
+
+## Encountered problems
 
 - **Problem**: **ClassCastException** exception when caching posts.
   **Solution**: disable spring-boot-devtools dependency.
