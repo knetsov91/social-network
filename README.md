@@ -56,6 +56,8 @@ A social network backend built as independent microservices using Spring Boot 3 
 For more information about **database** visit [here](./docs/database.md).
 For more information about **architecture** visit [here](./docs/architecture.md).
 
+This repository covers the backend only. The React frontend lives in [social-network-react](https://github.com/knetsov91/social-network-react).
+
 ## Services & Ports
 
 | Service | Port | Description |
