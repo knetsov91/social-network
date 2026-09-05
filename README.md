@@ -1,5 +1,7 @@
 # Social network
 
+*Also available as [README.html](./README.html) for offline viewing — regenerate it with `./scripts/generate-readme-html.sh` after editing this file.*
+
 ## Table of contents
 
 - [Project overview](#project-overview)
