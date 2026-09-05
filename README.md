@@ -3,6 +3,7 @@
 <!-- badges:start -->
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+[![api-gateway CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-api-gateway.yml?branch=main&label=api-gateway%20CI)](https://github.com/knetsov91/social-network/actions/workflows/ci-api-gateway.yml)
 <!-- badges:end -->
 
 ## Table of contents
