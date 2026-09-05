@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Social network</title>
+<style>
+  body {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: #1f2328;
+    line-height: 1.6;
+  }
+  h1, h2, h3 { border-bottom: 1px solid #d1d9e0; padding-bottom: 0.3rem; }
+  a { color: #0969da; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: #f6f8fa; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+  pre { background: #f6f8fa; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #d1d9e0; padding: 0.5rem 0.75rem; text-align: left; }
+  th { background: #f6f8fa; }
+  blockquote { border-left: 4px solid #d1d9e0; margin: 0; padding: 0 1rem; color: #59636e; }
+  img { max-width: 100%; }
+</style>
+</head>
+<body>
+<h1 id="social-network">Social network</h1>
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#project-overview">Project overview</a></li>
+<li><a href="#highlights">Highlights</a></li>
+<li><a href="#tech-stack">Tech stack</a></li>
+<li><a href="#services--ports">Services &amp; Ports</a></li>
+<li><a href="#demos">Demos</a></li>
+<li><a href="#quick-start-local">Quick start (local)</a></li>
+<li><a href="#authentication">Authentication</a></li>
+<li><a href="#running-tests">Running tests</a></li>
+<li><a href="#ci">CI</a></li>
+<li><a href="#microservices-documentation">Microservices documentation</a></li>
+<li><a href="#architecture-decisions">Architecture decisions</a></li>
+<li><a href="#encountered-problems">Encountered problems</a></li>
+</ul>
+<h2 id="project-overview">Project overview</h2>
+<p>A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.</p>
+<h2 id="highlights">Highlights</h2>
+<ul>
+<li><strong>Transactional outbox</strong> for exactly-once-style Kafka publishing from post-service — no events lost on a crash between DB commit and broker send (<a href="./docs/decisions/003-transactional-outbox.md">ADR 003</a>)</li>
+<li><strong>Cookie-based JWT auth</strong> with a Redis-backed blacklist for instant invalidation, validated centrally at the gateway before any request reaches a service</li>
+<li><strong>Redis token-bucket rate limiting</strong> and a <strong>Resilience4j circuit breaker</strong>, both proven under k6 load tests, not just implemented (see <a href="#demos">Demos</a>)</li>
+<li><strong>Full distributed tracing</strong> (OpenTelemetry → Jaeger) and custom <strong>Prometheus/Grafana</strong> dashboards across every service, including JVM and Kafka broker metrics</li>
+<li><strong>Real-time chat and notifications</strong> via STOMP over WebSocket and Kafka, routed through a single API Gateway entry point for both HTTP and WebSocket traffic</li>
+<li><strong>Database-per-service</strong> (PostgreSQL, MySQL, MongoDB) with secrets centralized in HashiCorp Vault instead of env vars</li>
+</ul>
+<h2 id="tech-stack">Tech stack</h2>
+<ul>
+<li>Java 21</li>
+<li>Spring Boot 3</li>
+<li>Spring Security 6</li>
+<li>Spring Cloud (Gateway, Eureka)</li>
+<li>React JS</li>
+<li>PostgreSQL</li>
+<li>MySQL</li>
+<li>MongoDb</li>
+<li>Redis</li>
+<li>Apache Kafka</li>
+<li>Docker</li>
+<li>JUnit5</li>
+<li>K6 (performance testing, JavaScript)</li>
+<li>WebSocket</li>
+<li>HashiCorp Vault</li>
+<li>Prometheus</li>
+<li>Grafana</li>
+</ul>
+<p>For more information about <strong>database</strong> visit <a href="./docs/database.md">here</a>.
+For more information about <strong>architecture</strong> visit <a href="./docs/architecture.md">here</a>.</p>
+<h2 id="services--ports">Services &amp; Ports</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Port</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>api-gateway</td>
+<td>8085</td>
+<td>Entry point for all client requests; handles TLS termination, routing, and JWT validation</td>
+</tr>
+<tr>
+<td>service-discovery</td>
+<td>8761</td>
+<td>Eureka server; all microservices register here for load-balanced routing</td>
+</tr>
+<tr>
+<td>user-service</td>
+<td>dynamic</td>
+<td>Manages user registration, login, and follow relationships</td>
+</tr>
+<tr>
+<td>auth-service</td>
+<td>dynamic</td>
+<td>Issues and validates JWT tokens; maintains a token blacklist</td>
+</tr>
+<tr>
+<td>post-service</td>
+<td>dynamic</td>
+<td>Handles post creation, retrieval, and likes</td>
+</tr>
+<tr>
+<td>chat-service</td>
+<td>8089</td>
+<td>Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is routed through the gateway</td>
+</tr>
+<tr>
+<td>notification-service</td>
+<td>dynamic</td>
+<td>Consumes Kafka events and pushes real-time notifications over WebSocket</td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td>5432</td>
+<td>Relational database for post-service</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>3306</td>
+<td>Relational database for user-service</td>
+</tr>
+<tr>
+<td>MongoDB</td>
+<td>27017</td>
+<td>NoSQL (Document) database for chat-service</td>
+</tr>
+<tr>
+<td>Redis</td>
+<td>6379</td>
+<td>In-memory key-value store</td>
+</tr>
+<tr>
+<td>Redis Insight</td>
+<td>8001</td>
+<td>Web UI for inspecting Redis data</td>
+</tr>
+<tr>
+<td>Kafka</td>
+<td>9092</td>
+<td>Async event bus</td>
+</tr>
+<tr>
+<td>Vault</td>
+<td>8200</td>
+<td>Secrets management</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>9090</td>
+<td>Metrics collection (observability stack)</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td>3000</td>
+<td>Metrics dashboards (observability stack)</td>
+</tr>
+<tr>
+<td>Jaeger</td>
+<td>16686</td>
+<td>Distributed tracing UI (observability stack)</td>
+</tr>
+</tbody></table>
+<h2 id="demos">Demos</h2>
+<h3 id="jvm-metrics-dashboard">JVM metrics dashboard</h3>
+<p><a href="./assets/jvm-metrics-demo.mp4">assets/jvm-metrics-demo.mp4</a></p>
+<p>Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service.</p>
+<h3 id="api-gateway-rate-limiting">API Gateway rate limiting</h3>
+<p><a href="./assets/rate-limiting-demo.mp4">assets/rate-limiting-demo.mp4</a></p>
+<p>k6 spike test against the API Gateway&#39;s Redis-backed token bucket rate limiter (10 req/s sustained, burst of 20), watched live in Grafana. Traffic ramps past that budget, triggering <code>429</code> responses until the rate drops back under the limit and the bucket recovers.</p>
+<h3 id="jaeger-distributed-tracing">Jaeger distributed tracing</h3>
+<p>Traces captured by repeatedly logging in and following another user through the API Gateway.</p>
+<p><img src="./assets/jaeger-trace-search.png" alt="Jaeger UI trace search results, filtered to gateway-service / HTTP POST"></p>
+<p>Search results filtered to <code>Service=gateway-service, Operation=HTTP POST</code>, showing a list of traces that each span both <code>gateway-service</code> and <code>user-service</code>.</p>
+<p><img src="./assets/jaeger-trace-detail.png" alt="Jaeger UI trace detail view showing span nesting from gateway-service into user-service"></p>
+<p>Opening one of those traces shows the span nesting from the gateway down into user-service, for a single follow request.</p>
+<h2 id="quick-start-local">Quick start (local)</h2>
+<p><strong>Prerequisites:</strong> Java 21, Docker</p>
+<p><strong>1. Start infrastructure</strong></p>
+<pre><code class="language-bash">cd infrastructure
+docker compose up -d
+</code></pre>
+<p>This starts PostgreSQL, MySQL, MongoDB, Kafka, Redis, and Vault.</p>
+<p><strong>2. Set required environment variables</strong></p>
+<p>Create a <code>.env</code> file at the project root:</p>
+<pre><code class="language-bash"># PostgreSQL (post-service)
+POSTGRES_USER=&lt;POSTGRES_USER&gt;
+POSTGRES_PASSWORD=&lt;POSTGRES_PASSWORD&gt;
+POSTGRES_DB=&lt;POSTGRES_DB&gt;
+
+# MySQL (user-service)
+MYSQL_USER=&lt;MYSQL_USER&gt;
+MYSQL_PASSWORD=&lt;MYSQL_PASSWORD&gt;
+MYSQL_DATABASE=&lt;MYSQL_DATABASE&gt;
+MYSQL_ROOT_PASSWORD=&lt;MYSQL_ROOT_PASSWORD&gt;
+DB=&lt;DB&gt;                     # must match MYSQL_DATABASE
+
+# MongoDB (chat-service)
+MONGODB_HOST=&lt;MONGODB_HOST&gt;
+MONGO_USERNAME=&lt;MONGO_USERNAME&gt;
+MONGO_PASSWORD=&lt;MONGO_PASSWORD&gt;
+MONGO_AUTH=&lt;MONGO_AUTH&gt;
+
+# Vault (post-service, auth-service)
+VAULT_TOKEN=&lt;VAULT_TOKEN&gt;
+
+# JWT — auth-service signs, api-gateway validates; use the same base64-encoded secret for HMAC
+# JWT_SECRET_KEY and JWT_EXP_TIME are stored in Vault and read from there by auth-service, not env vars
+JWT_SECRET_KEY=&lt;JWT_SECRET_KEY&gt;
+JWT_KEY=&lt;JWT_KEY&gt;
+JWT_EXP_TIME=&lt;JWT_EXP_TIME&gt;
+
+# TLS — must match the password of the PKCS12 keystore used by api-gateway
+KEY_STORE_PASSWORD=&lt;KEY_STORE_PASSWORD&gt;
+WEBCLIENTJKS_KEY=&lt;WEBCLIENTJKS_KEY&gt;
+
+# Service discovery — hostname only, port is appended automatically
+SERVICE_DISCOVERY_HOST=&lt;SERVICE_DISCOVERY_HOST&gt;
+
+# Frontend
+FRONTEND_ORIGIN=&lt;FRONTEND_ORIGIN&gt;
+</code></pre>
+<p><strong>3. Seed secrets into Vault</strong></p>
+<pre><code class="language-bash">./infrastructure/vault/seed.sh
+</code></pre>
+<p>Writes the DB credentials, JWT secret, and Sentry DSN into <code>secret/post-service</code> and <code>secret/auth-service</code>. Required before starting those two services — both fail to start without their secrets present in Vault.</p>
+<p><strong>4. Start services in order</strong></p>
+<blockquote>
+<p>Make sure environment variables are exported before starting services — see <strong>Encountered problems</strong> section.</p>
+</blockquote>
+<pre><code class="language-bash"># 1 — service registry must be first
+cd service-discovery &amp;&amp; ./gradlew bootRun
+
+# 2 — backend services (any order)
+cd user-service         &amp;&amp; ./gradlew bootRun
+cd auth-service         &amp;&amp; ./gradlew bootRun
+cd post-service         &amp;&amp; ./gradlew bootRun
+cd chat-service         &amp;&amp; ./gradlew bootRun
+cd notification-service &amp;&amp; ./gradlew bootRun
+
+# 3 — gateway last
+cd api-gateway &amp;&amp; ./gradlew bootRun
+</code></pre>
+<p><strong>5. (Optional) Start observability stack</strong></p>
+<pre><code class="language-bash">cd infrastructure/observability
+docker compose up -d   # Prometheus :9090, Grafana :3000
+</code></pre>
+<p>See <a href="./docs/observability.md">docs/observability.md</a> for what&#39;s actually collected — custom metrics, dashboards, and tracing setup.</p>
+<h2 id="authentication">Authentication</h2>
+<p>All requests are routed through the API Gateway. Authentication is cookie-based — the client never handles the JWT directly.</p>
+<p><strong>Flow:</strong></p>
+<ol>
+<li><strong>Register</strong> — <code>POST /api/v1/users/register</code> with <code>username</code>, <code>password</code>, and <code>confirmPassword</code>. No authentication required.</li>
+<li><strong>Login</strong> — <code>POST /api/v1/users/login</code> with <code>username</code> and <code>password</code>. On success the gateway sets an <code>HttpOnly</code>, <code>Secure</code>, <code>SameSite=None</code> cookie named <code>token</code> containing a signed JWT. The cookie is valid for 1 hour.</li>
+<li><strong>Authenticated requests</strong> — Every subsequent request must include the <code>token</code> cookie. The API Gateway&#39;s <code>AuthFilter</code> intercepts every request, reads the cookie, and calls the auth-service to validate the token (checking signature, expiry, and the blacklist stored in Redis). If the token is missing or invalid the gateway immediately returns <code>401 Unauthorized</code> without forwarding the request downstream.</li>
+<li><strong>Token issuance</strong> — Tokens are issued exclusively by auth-service. When the user logs in, user-service authenticates the credentials and then calls <code>POST /api/v1/tokens/issue</code> on auth-service through the gateway. Auth-service signs the JWT with <code>JWT_SECRET_KEY</code> using HMAC-SHA256 and returns it to user-service, which sets it as the response cookie.</li>
+<li><strong>Invalidation</strong> — A token can be blacklisted by calling <code>POST /api/v1/tokens/invalidate</code>. Blacklisted tokens are stored in Redis and rejected by auth-service on every subsequent validation request even if the JWT has not yet expired.</li>
+</ol>
+<p><strong>Public endpoints</strong> (no token required):</p>
+<pre><code>POST  /api/v1/users/register   Register a new user
+POST  /api/v1/users/login      Login and receive token cookie
+POST  /api/v1/tokens/**        Token operations (issue, validate, invalidate, is-invalidated)
+</code></pre>
+<p>All other endpoints require a valid <code>token</code> cookie.</p>
+<h2 id="running-tests">Running tests</h2>
+<p><strong>Unit tests</strong> — no infrastructure required:</p>
+<pre><code class="language-bash"># From any service directory
+./gradlew test --tests &quot;**.*UTest&quot;
+</code></pre>
+<p><strong>Integration tests</strong> — require PostgreSQL and Redis running. Before running post-service integration tests, create the test database:</p>
+<pre><code class="language-bash">docker exec &lt;postgres-container&gt; psql -U $POSTGRES_USER -c &quot;CREATE DATABASE posts_test;&quot;
+</code></pre>
+<p>Then run from the service directory:</p>
+<pre><code class="language-bash">./gradlew test --tests &quot;**.*ITTest&quot;
+</code></pre>
+<p>Integration tests use a dedicated database (<code>posts_test</code>) to avoid touching the main database. Each test rolls back its writes via <code>@Transactional</code> so tests don&#39;t affect each other.</p>
+<p><strong>Performance tests</strong> — K6 scripts in <strong>k6/</strong>, run via the <strong>grafana/k6</strong> Docker image against an already-running stack. In local development services run directly on the host via <strong>./gradlew bootRun</strong> (not in Docker), so the k6 container needs <strong>--network host</strong> to reach them at <strong>localhost</strong>; if the stack is deployed in Docker instead, drop <strong>--network host</strong> and point <strong>BASE_URL</strong> at the containers&#39; network:</p>
+<pre><code class="language-bash">docker run --rm --network host -v $(pwd)/k6:/scripts grafana/k6 run /scripts/&lt;script&gt;.js
+</code></pre>
+<ul>
+<li><strong>rate-limiting.js</strong> — spikes traffic against the API Gateway to trigger the Redis token bucket rate limiter, verifying requests get throttled with <strong>429</strong> once the burst capacity is exceeded and recover once the rate drops.</li>
+<li><strong>circuit-breaker.js</strong> — repeatedly calls <strong>GET /api/v1/posts/feed</strong> while user-service is killed and restarted mid-run, verifying the post-service → user-service Resilience4j circuit breaker falls back to an empty feed instead of erroring when user-service is unreachable.</li>
+</ul>
+<h2 id="ci">CI</h2>
+<p>Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to <code>main</code> and <code>dev</code> when files within that service&#39;s directory change.</p>
+<p>Each workflow has two jobs:</p>
+<p><strong>build</strong> — delegates to <code>.github/workflows/_gradle-build.yml</code>, runs on <code>ubuntu-latest</code> with Java 21 (Temurin):</p>
+<pre><code class="language-bash">./gradlew test --tests &quot;**.*UTest&quot;
+</code></pre>
+<p>The <code>*UTest</code> filter excludes Spring context load tests and integration tests that need a running database or Kafka.</p>
+<p><strong>publish</strong> — runs only on direct push to <code>main</code>, after <code>build</code> passes. Delegates to <code>.github/workflows/_docker-publish.yml</code>, which builds the service&#39;s Docker image and pushes it to DockerHub with two tags:</p>
+<ul>
+<li><code>&lt;username&gt;/social-network-&lt;service&gt;:latest</code></li>
+<li><code>&lt;username&gt;/social-network-&lt;service&gt;:&lt;git-sha&gt;</code></li>
+</ul>
+<p>Requires <code>DOCKERHUB_USERNAME</code> and <code>DOCKERHUB_TOKEN</code> repository secrets.</p>
+<p>For the full pipeline breakdown see <a href="./docs/ci-cd.md">docs/ci-cd.md</a>. For the git workflow behind it — branch naming, commit format, when <code>dev</code> gets PR&#39;d into <code>main</code> — see <a href="./docs/branching.md">docs/branching.md</a>.</p>
+<h2 id="microservices-documentation">Microservices documentation</h2>
+<ul>
+<li><strong>User microservice</strong> (<a href="./docs/user-service/overview.md">overview</a>)<ul>
+<li><a href="./docs/user-service/api/api.md">API</a></li>
+<li><a href="./docs/user-service/database/database.md">Database</a></li>
+<li><a href="./docs/user-service/functional_requirements.md">Functional requirements</a></li>
+</ul>
+</li>
+<li><strong>Auth microservice</strong> (<a href="./docs/auth-service/overview.md">overview</a>)<ul>
+<li><a href="./docs/auth-service/api/api.md">API</a></li>
+</ul>
+</li>
+<li><strong>Post microservice</strong> (<a href="./docs/post-service/overview.md">overview</a>)<ul>
+<li><a href="./docs/post-service/api/api.md">API</a></li>
+<li><a href="./docs/post-service/database/database.md">Database</a></li>
+</ul>
+</li>
+<li><strong>Chat microservice</strong> (<a href="./docs/chat-service/overview.md">overview</a>)</li>
+<li><strong>Notification microservice</strong> (<a href="./docs/notification-service/overview.md">overview</a>)</li>
+<li><strong>API Gateway microservice</strong> (<a href="./docs/api-gateway-service/overview.md">overview</a>)<ul>
+<li><a href="./docs/api-gateway-service/routes/routes.md">Routes</a></li>
+<li><a href="./docs/api-gateway-service/security/security.md">Security</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="architecture-decisions">Architecture decisions</h2>
+<ul>
+<li><a href="./docs/decisions/001-cookie-based-jwt-auth.md">ADR 001 — Cookie-based JWT authentication</a> — HttpOnly cookie over an <code>Authorization</code> header, so the React SPA never handles the JWT directly</li>
+<li><a href="./docs/decisions/002-idempotent-follow-via-db-constraint.md">ADR 002 — Idempotent follow via DB unique constraint</a> — a DB-level unique constraint instead of an application-level existence check to make duplicate follow requests a no-op</li>
+<li><a href="./docs/decisions/003-transactional-outbox.md">ADR 003 — Transactional outbox in post-service</a> — an outbox table and poller instead of Debezium CDC, so a crash between the DB commit and the Kafka publish can&#39;t silently drop a notification</li>
+<li><a href="./docs/decisions/004-vault-secrets-management.md">ADR 004 — HashiCorp Vault for secrets management</a> — post-service and auth-service pull secrets from Vault at startup instead of plain env vars, with no access control or audit trail</li>
+</ul>
+<h2 id="encountered-problems">Encountered problems</h2>
+<ul>
+<li><p><strong>Problem</strong>: <strong>ClassCastException</strong> exception when caching posts.
+<strong>Solution</strong>: disable spring-boot-devtools dependency.</p>
+</li>
+<li><p><strong>Problem</strong>: When implement UserDetailsService as lambda or in UserDetails service there is circular dependency when used in OncePerRequestFilter.
+<strong>Solution</strong>: Implement UserDetailsService as Bean in separate class.</p>
+</li>
+<li><p><strong>Problem</strong>: When use HandlerExceptionResolver in OncePerRequestFilter there is circular dependency.
+<strong>Solution</strong>: Use field injection with @Lazy annotation. (<em>Temporary fix</em>)</p>
+</li>
+<li><p><strong>Problem</strong>: CORS - duplicated Access-Control-Allow-Origin in response headers.
+<strong>Solution</strong>: Add DedupeResponseHeader in API Gateway&#39;s <strong>default-filters</strong> property.</p>
+</li>
+<li><p><strong>Problem</strong>: When caching entity that contains LAZY loaded collection gives &quot;failed to lazily initialize a collection of role: ... could not initialize proxy - no Session&quot;.
+<strong>Solution</strong>: Make Lazy loaded collection in Post entity as eagerly loaded.</p>
+</li>
+<li><p><strong>Problem</strong>: When build image in docker-compose.yaml give &quot;ERROR: unable to prepare context: path &quot;[Dockerfile-directory]/Dockerfile&quot; not found&quot;.
+<strong>Solution</strong>: In docker-compose.yaml build attribute for service must contain [Dockerfile-directory] only.</p>
+</li>
+<li><p><strong>Problem</strong>: Eureka service discovery with docker when try to communicate with API Gateway microservice give following error: &quot;Could not create URI object: Illegal character in hostname at index 14: <a href="http://service_disc:8761/eureka/apps/GATEWAY-SERVICE">http://service_disc:8761/eureka/apps/GATEWAY-SERVICE</a>&quot;.
+<strong>Solution</strong>: Service name must not contain &quot;-&quot; character.</p>
+</li>
+<li><p><strong>Problem</strong>: Handling exceptions globally in CustomErrorWebExceptionHandler class return response without body.
+<strong>Solution</strong>: Add getters and setters for the class returned in response body.</p>
+</li>
+<li><p><strong>Problem</strong>: When using WebClient to make requests to service that use self-signed certificate gives &quot;PKIX path building failed: unable to find valid certification path to requested target&quot;.
+<strong>Solution</strong>: Configuring WebClient with a custom Truststore.</p>
+</li>
+<li><p><strong>Problem</strong>: During integration test with H2 in-memory database get &quot;h2 could not prepare statement [table &quot;user&quot; not found]&quot;.
+<strong>Solution</strong>: Use <code>spring.jpa.database-platform=org.hibernate.dialect.H2Dialect</code> instead of <code>spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect</code> in properties.yaml used for testing and use <code>@Table(name=&quot;</code>user<code>&quot;)</code> in User entity.</p>
+</li>
+<li><p><strong>Problem</strong>: Environment variables from <code>.env</code> are not visible to services started with <code>./gradlew bootRun</code> — Spring fails to resolve placeholders like <code>${KEY_STORE_PASSWORD}</code>.
+<strong>Solution</strong>: Source the <code>.env</code> file with <code>set -a</code> so all variables are automatically exported to child processes: <code>set -a &amp;&amp; source .env &amp;&amp; set +a</code>.</p>
+</li>
+<li><p><strong>Problem</strong>: Individual services (e.g. user-service) return 403 on requests forwarded by the API Gateway due to hardcoded CORS origin restrictions in their own <code>SecurityConfig</code>.
+<strong>Solution</strong>: Disable CORS in individual service security configs (<code>.cors(c -&gt; c.disable())</code>). Services sit behind the gateway and never receive direct browser requests, so CORS enforcement belongs exclusively to the gateway.</p>
+</li>
+<li><p><strong>Problem</strong>: CORS preflight (<code>OPTIONS</code>) requests to the API Gateway return 403 with <code>Access-Control-Allow-Origin</code> header missing.
+<strong>Solution</strong>: Define an explicit <code>CorsConfigurationSource</code> bean in <code>SecurityConfig</code>. Without it, Spring Security&#39;s <code>.cors(Customizer.withDefaults())</code> has nothing to bind its <code>CorsWebFilter</code> to, so preflight requests fall through to the router and get forwarded downstream without CORS headers. Also, add an <code>OPTIONS</code> method check at the top of <code>AuthFilter</code> to skip token validation for preflight requests — browsers send <code>OPTIONS</code> without cookies, so without this check preflights on protected routes are rejected with 401 before CORS headers can be added.</p>
+</li>
+<li><p><strong>Problem</strong>: After a service restart, <code>GET /api/v1/users</code> returns 400 with &quot;Unrecognized field &#39;enabled&#39;&quot; when the response is served from Redis cache.
+<strong>Solution</strong>: Add <code>@JsonIgnore</code> to all <code>UserDetails</code> interface methods (<code>isEnabled</code>, <code>isAccountNonExpired</code>, <code>isAccountNonLocked</code>, <code>isCredentialsNonExpired</code>, <code>getAuthorities</code>) in the <code>User</code> entity. These methods are serialized by Jackson as fields when caching but have no corresponding setters to deserialize back into, causing the mismatch. Adding setters would also fix deserialization but is the wrong approach — these are Spring Security interface methods that do not belong to the domain model, so caching them is redundant. <code>@JsonIgnore</code> prevents them from being cached at all.</p>
+</li>
+<li><p><strong>Problem</strong>: Frontend cannot read 401 responses from the API Gateway on cross-origin requests — the browser blocks the response even though the status code is returned correctly.
+<strong>Solution</strong>: Add <code>Access-Control-Allow-Origin</code> and <code>Access-Control-Allow-Credentials</code> CORS headers to 401 responses in <code>AuthFilter</code>. Any cross-origin request sent with credentials (cookies, Authorization header) requires these headers on every response, including error responses, for the browser to expose them to frontend JavaScript.</p>
+</li>
+</ul>
+</body>
+</html>
