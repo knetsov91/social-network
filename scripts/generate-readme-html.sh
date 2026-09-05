@@ -2,11 +2,15 @@
 # Regenerates README.html from README.md.
 # README.html is generated, self-contained (no CDN/network needed to view it), and committed
 # alongside README.md so it can be opened offline. Re-run this after every README.md change.
+#
+# The badges block (README.md, between the badges:start/end comments) is dropped here —
+# those images are fetched live from shields.io, which defeats offline viewing and, unlike
+# on github.com, isn't proxied through Camo, so it'd also leak the viewer's IP to shields.io.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-BODY="$(npx --yes marked README.md | node scripts/slugify-headings.js)"
+BODY="$(sed '/<!-- badges:start -->/,/<!-- badges:end -->/d' README.md | npx --yes marked | node scripts/slugify-headings.js)"
 
 cat > README.html <<HTML
 <!DOCTYPE html>
