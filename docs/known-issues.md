@@ -1,4 +1,4 @@
-# Known issues / future work
+# Known issues
 
 Gaps identified but not yet fixed. Each is a correctness or availability issue once a service runs more than one replica — none of them show up in local dev, where every service is a single instance.
 
