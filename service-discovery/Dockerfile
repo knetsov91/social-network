@@ -15,4 +15,4 @@ RUN addgroup -S spring && adduser -S spring -G spring
 COPY --from=builder --chown=spring:spring /app/build/libs/*.jar app.jar
 USER spring:spring
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
