@@ -75,11 +75,13 @@ services:
 
   service-discovery:
     build: ../service-discovery
+    mem_limit: 512m
     ports:
       - "8761:8761"
 
   api-gateway:
     build: ../api-gateway
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -93,6 +95,7 @@ services:
 
   auth-service:
     build: ../auth-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -106,6 +109,7 @@ services:
 
   post-service:
     build: ../post-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -121,6 +125,7 @@ services:
 
   user-service:
     build: ../user-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -135,6 +140,7 @@ services:
 
   chat-service:
     build: ../chat-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -146,6 +152,7 @@ services:
 
   notification-service:
     build: ../notification-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
