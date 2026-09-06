@@ -1,16 +1,28 @@
 spring:
   application:
     name: user-service
+
+  config:
+    import: "vault://"
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DB}?sslMode=DISABLED&allowPublicKeyRetrieval=true
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
 
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+
+  cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 
   jpa:
     show-sql: true
@@ -54,7 +66,6 @@ management:
       probability: 1.0
 
 sentry:
-  dsn: ${SENTRY_DSN}
   send-default-pii: true
   logs:
     enabled: true
