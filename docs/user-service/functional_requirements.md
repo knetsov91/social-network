@@ -64,8 +64,9 @@
   - Evicts the follower's `followings` cache entry.
 - **Outputs**: `200 OK` on success, including when the follow relationship already existed.
 - **Acceptance Criteria**:
-  - Requires authentication — the follower is taken from the authenticated principal, not a request field.
+  - Intended to require authentication — the follower is taken from the authenticated principal, not a request field.
   - Calling this endpoint repeatedly with the same `followeId` never creates duplicate rows or returns an error.
+- **Known bug**: `SecurityConfig`'s `requestMatchers("/api/v1/users/*")` is a single-segment wildcard meant for `GET /api/v1/users/{id}`, but `/api/v1/users/follow` also has exactly one segment after `/users/`, so it matches too — making this endpoint unintentionally `permitAll()`. An unauthenticated call doesn't get rejected with 401; `@AuthenticationPrincipal` resolves to `null`, and the subsequent `user.getId()` throws a `NullPointerException`, surfacing as a generic `400` instead.
 
 ## 7. Get a User's Followings
 
