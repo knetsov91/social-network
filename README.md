@@ -53,15 +53,15 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 
 ### JVM metrics dashboard
 
-[assets/jvm-metrics-demo.mp4](./assets/jvm-metrics-demo.mp4)
+![JVM metrics dashboard in Grafana, tracking heap/non-heap memory, GC activity, thread count, and open file descriptors across microservices](./assets/jvm-metrics-demo.gif)
 
-Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service.
+Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service. Full-quality video: [assets/jvm-metrics-demo.mp4](./assets/jvm-metrics-demo.mp4).
 
 ### API Gateway rate limiting
 
-[assets/rate-limiting-demo.mp4](./assets/rate-limiting-demo.mp4)
+![k6 spike test against the API Gateway's rate limiter, watched live in Grafana](./assets/rate-limiting-demo.gif)
 
-k6 spike test against the API Gateway's Redis-backed token bucket rate limiter (10 req/s sustained, burst of 20), watched live in Grafana. Traffic ramps past that budget, triggering `429` responses until the rate drops back under the limit and the bucket recovers.
+k6 spike test against the API Gateway's Redis-backed token bucket rate limiter (10 req/s sustained, burst of 20), watched live in Grafana. Traffic ramps past that budget, triggering `429` responses until the rate drops back under the limit and the bucket recovers. Full-quality video: [assets/rate-limiting-demo.mp4](./assets/rate-limiting-demo.mp4).
 
 ### Jaeger distributed tracing
 
