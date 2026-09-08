@@ -75,6 +75,10 @@ Search results filtered to `Service=gateway-service, Operation=HTTP POST`, showi
 
 Opening one of those traces shows the span nesting from the gateway down into user-service, for a single follow request.
 
+![Jaeger UI trace detail for a failed login request, showing the gateway-service span containing a nested user-service span that returns a 500](./assets/jaeger-trace-cross-service-login.png)
+
+A login request traced end to end: the gateway's own Spring Security filter chain, the network hop into user-service, and user-service's independent filter chain, all under one trace ID (2 services, 11 spans). Here `auth-service` wasn't running, so user-service's `secured request` span (247.6ms of the 265.95ms total) shows exactly where the request stalled waiting on the token-issuance call, and the `http post /api/v1/users/login` span reports `outcome=SERVER_ERROR` — the trace pinpoints both the failure and where the time went, not just that something failed.
+
 ## Quick start (local)
 
 **Prerequisites:** Java 21, Docker
