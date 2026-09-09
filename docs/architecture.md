@@ -17,3 +17,7 @@ Direct Kafka publishes inside a transaction aren't atomic — a crash after the 
 Instead **PostService** writes an **OutboxEvent** row to **outbox_events** in the same transaction as the post update. **OutboxEventPoller** uses Spring Boot scheduling to pick up unpublished rows every 5 seconds, sends them to Kafka and marks them published.
 
 See [ADR 003](decisions/003-transactional-outbox.md) for the decision rationale, drawbacks and alternatives.
+
+## Known issues
+
+Gaps that only surface once a service runs more than one replica — see [known-issues.md](known-issues.md).

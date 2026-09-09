@@ -1,28 +1,28 @@
 spring:
   application:
     name: user-service
+
+  config:
+    import: "vault://"
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/${DB}
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-  ssl:
-    bundle:
-      jks:
-        client:
-          keystore:
-            location: classpath:keystore/ko2.p12
-            password: ${KEY_STORE_PASSWORD}
-            type: PKCS12
-          truststore:
-            location: classpath:keystore/ko2.p12
-            password: ${KEY_STORE_PASSWORD}
-            type: PKCS12
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${DB}?sslMode=DISABLED&allowPublicKeyRetrieval=true
 
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+
+  cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 
   jpa:
     show-sql: true
@@ -40,7 +40,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${SERVICE_DISCOVERY_HOST}:8761/eureka
     instance:
       preferIpAddress: true
 
@@ -50,9 +50,6 @@ logging:
     org:
       springframework:
         security: DEBUG
-auth:
-  url: https://localhost:8085/api/v1/tokens
-
 frontend:
   url: http://localhost:5174
 
@@ -67,9 +64,13 @@ management:
   tracing:
     sampling:
       probability: 1.0
-  otlp:
-    tracing:
-      endpoint: http://localhost:4318/v1/traces
+
+sentry:
+  send-default-pii: true
+  logs:
+    enabled: true
+  tags:
+    service: user-service
 
 springdoc:
   swagger-ui:

@@ -35,5 +35,5 @@ jobs:
           context: ${{ inputs.service }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.service }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/social-network-${{ inputs.service }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/social-network-${{ inputs.service }}:${{ github.sha }}

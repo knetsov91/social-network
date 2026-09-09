@@ -1,24 +1,30 @@
 spring:
-  application:
-    name: auth-service
-
+  config:
+    import: "vault://"
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+  application:
+    name: auth-service
+  cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 server:
   port: 0
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${SERVICE_DISCOVERY_HOST}:8761/eureka
     instance:
       preferIpAddress: true
-
-jwt:
-  expiration-time: ${JWT_EXP_TIME}
-  secret-key: ${JWT_SECRET_KEY}
 
 management:
   endpoints:
@@ -34,6 +40,14 @@ management:
   otlp:
     tracing:
       endpoint: http://localhost:4318/v1/traces
+
+sentry:
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: auth-service
 
 springdoc:
   swagger-ui:

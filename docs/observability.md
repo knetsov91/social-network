@@ -4,6 +4,8 @@
 
 Prometheus scrapes each service's `/actuator/prometheus` endpoint every 5 seconds. Grafana at `:3000` visualises the collected metrics.
 
+Kafka broker metrics (consumer lag, partition counts, throughput) are exposed separately via `kafka-exporter`, scraped by Prometheus at `kafka-exporter:9308`.
+
 Start the observability stack:
 
 ```bash
@@ -24,4 +26,4 @@ All services export traces via OpenTelemetry Protocol (OTLP) to Jaeger. Every re
 - `opentelemetry-exporter-otlp` — sends spans over HTTP to Jaeger's OTLP collector (`:4318`)
 - Sampling rate: `1.0` (100% of requests are traced)
 
-**Instrumented services:** `gateway-service`, `auth-service`, `user-service`
+**Instrumented services:** `gateway-service`, `auth-service`, `user-service`, `post-service`, `chat-service`, `notification-service`. `service-discovery` has no tracing — it has no custom code to instrument.

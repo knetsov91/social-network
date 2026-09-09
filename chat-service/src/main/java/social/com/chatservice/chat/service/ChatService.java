@@ -1,5 +1,6 @@
 package social.com.chatservice.chat.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import social.com.chatservice.chat.model.Chat;
 import social.com.chatservice.chat.repository.ChatRepository;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ChatService {
 
@@ -51,13 +53,20 @@ public class ChatService {
     }
 
     public void createChat(CreateChatRequest createChatRequest) {
+        List<UUID> participants = createChatRequest.getParticipants();
+
+        chatRepository.findByParticipants(participants, participants.size()).ifPresent(existing -> {
+            throw new RuntimeException("Chat between these participants already exists");
+        });
+
         Chat chat = new Chat();
         chat.setCreatedBy(createChatRequest.getCreatedBy());
-        chat.setParticipants(createChatRequest.getParticipants());
+        chat.setParticipants(participants);
         chat.setCreatedAt(LocalDateTime.now());
         chat.setUpdatedAt(LocalDateTime.now());
 
-         chatRepository.save(chat);
+        chatRepository.save(chat);
+        log.info("Chat created: createdBy={}, participants={}", chat.getCreatedBy(), chat.getParticipants());
     }
 
     public Chat getChatById(String chatId) {

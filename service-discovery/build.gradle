@@ -39,4 +39,9 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // No unit-testable logic here — this service is just @EnableEurekaServer wiring.
+    // Don't fail CI's "**.*UTest" filter for having nothing to match.
+    filter {
+        setFailOnNoMatchingTests(false)
+    }
 }

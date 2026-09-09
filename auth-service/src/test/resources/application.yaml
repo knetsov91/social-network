@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    vault:
+      enabled: false
+
+jwt:
+  expiration-time: ${JWT_EXP_TIME}
+  secret-key: ${JWT_SECRET_KEY}

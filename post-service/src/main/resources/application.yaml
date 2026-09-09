@@ -2,16 +2,17 @@ spring:
   application:
     name: post-service
 
+  config:
+    import: "vault://"
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
-      port: 6379
+      port: ${REDIS_PORT:6379}
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5435}/${POSTGRES_DB}
 
   jpa:
     show-sql: true
@@ -33,12 +34,12 @@ spring:
             connectTimeout: 2000
             readTimeout: 3000
     vault:
-      uri: http://127.0.0.1:8200
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
       token: ${VAULT_TOKEN}
       scheme: http
       kv:
         enabled: true
-        default-context: secret
+        kv-version: 2
       fail-fast: true
 
 server:
@@ -47,7 +48,7 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://${SERVICE_DISCOVERY_HOST}:8761/eureka
     instance:
       preferIpAddress: true
 
@@ -78,6 +79,14 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
+
+sentry:
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: post-service
 
 springdoc:
   swagger-ui:

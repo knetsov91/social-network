@@ -1,4 +1,5 @@
-version: '3.3'
+name: social-network
+
 services:
   vault:
     image: hashicorp/vault
@@ -20,7 +21,7 @@ services:
   posts-service-db:
     image: postgres
     ports:
-      - "5432:5432"
+      - "5435:5432"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -28,7 +29,7 @@ services:
       - social_network_db_data:/var/lib/postgresql
 
   user-service-db:
-    image: mysql
+    image: mysql:9.7
     ports:
       - "3306:3306"
     environment:
@@ -41,26 +42,151 @@ services:
 
   kafka:
     image: apache/kafka:4.0.0
+    hostname: kafka
+    environment:
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
     ports:
-      - "9092:9092"  
+      - "9092:9092"
+    volumes:
+      - social_network_kafka_data:/tmp/kraft-combined-logs
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter
+    command: ["--kafka.server=kafka:9092"]
+    restart: on-failure
+    ports:
+      - "9308:9308"
+    depends_on:
+      - kafka
+
   redis:
     image: redis/redis-stack
     ports:
-      - "6379:6379"
-      - "8001:8001"
+      - "6380:6379"
+      - "8002:8001"
 
   chat-service-db:
     image: mongo:7
     ports:
-      - "27017:27017"
+      - "27018:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
     volumes:
       - social_network_chat_db_data:/data/db
 
+  service-discovery:
+    build: ../service-discovery
+    mem_limit: 512m
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build: ../api-gateway
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    ports:
+      - "8085:8085"
+    depends_on:
+      - service-discovery
+      - vault
+      - redis
+
+  auth-service:
+    build: ../auth-service
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    depends_on:
+      - service-discovery
+      - vault
+      - redis
+
+  post-service:
+    build: ../post-service
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    depends_on:
+      - service-discovery
+      - vault
+      - redis
+      - posts-service-db
+
+  user-service:
+    build: ../user-service
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    depends_on:
+      - service-discovery
+      - vault
+      - redis
+      - user-service-db
+
+  chat-service:
+    build: ../chat-service
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      MONGODB_HOST: ${MONGODB_HOST}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    depends_on:
+      - service-discovery
+      - vault
+      - chat-service-db
+
+  notification-service:
+    build: ../notification-service
+    mem_limit: 512m
+    env_file: compose.env
+    environment:
+      SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
+      REDIS_HOST: ${REDIS_HOST}
+      MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
+    depends_on:
+      - service-discovery
+      - vault
+      - redis
+
 volumes:
   vault_data:
   social_network_db_data:
   social_network_users_db_data:
   social_network_chat_db_data:
+  social_network_kafka_data:

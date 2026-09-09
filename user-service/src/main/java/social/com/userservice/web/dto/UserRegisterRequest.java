@@ -12,11 +12,11 @@ public class UserRegisterRequest {
     private String username;
 
     @NotEmpty(message = "Password is required")
-    @Size(min = 2, message = "Password must be at least 8 symbols.")
+    @Size(min = 8, message = "Password must be at least 8 symbols.")
     private String password;
 
     @NotEmpty(message = "Password confirmation is required")
-    @Size(min = 2, message = "Password confirmation must be at least 8 symbols.")
+    @Size(min = 8, message = "Password confirmation must be at least 8 symbols.")
     private String confirmPassword;
 
 }

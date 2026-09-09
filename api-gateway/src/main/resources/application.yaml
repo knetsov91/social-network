@@ -4,7 +4,6 @@ server:
     enabled: true
     key-store-type: PKCS12
     key-store: classpath:keystore/ko2.p12
-    key-store-password: ${KEY_STORE_PASSWORD}
     key-alias: ko2
   address: 0.0.0.0
 
@@ -12,12 +11,23 @@ spring:
   application:
     name: gateway-service
 
+  config:
+    import: "vault://"
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
   cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
     loadbalancer:
       cache:
         ttl: 5s
@@ -112,6 +122,10 @@ auth:
   url: https://localhost:8085/api/v1/tokens
   key: ${JWT_KEY}
 
-jks:
-  webclientstore:
-    key: ${WEBCLIENTJKS_KEY}
+sentry:
+  send-default-pii: true
+  logs:
+    enabled: true
+    minimum-level: info
+  tags:
+    service: api-gateway

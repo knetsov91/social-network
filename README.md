@@ -1,8 +1,44 @@
 # Social network
 
+<!-- badges:start -->
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/projects/jdk/21/)
+[![api-gateway CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-api-gateway.yml?branch=main&label=api-gateway)](https://github.com/knetsov91/social-network/actions/workflows/ci-api-gateway.yml)
+[![auth-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-auth-service.yml?branch=main&label=auth-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-auth-service.yml)
+[![user-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-user-service.yml?branch=main&label=user-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-user-service.yml)
+[![post-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-post-service.yml?branch=main&label=post-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-post-service.yml)
+[![chat-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-chat-service.yml?branch=main&label=chat-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-chat-service.yml)
+[![notification-service CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-notification-service.yml?branch=main&label=notification-service)](https://github.com/knetsov91/social-network/actions/workflows/ci-notification-service.yml)
+[![service-discovery CI](https://img.shields.io/github/actions/workflow/status/knetsov91/social-network/ci-service-discovery.yml?branch=main&label=service-discovery)](https://github.com/knetsov91/social-network/actions/workflows/ci-service-discovery.yml)
+<!-- badges:end -->
+
+## Table of contents
+
+- [Project overview](#project-overview)
+- [Highlights](#highlights)
+- [Tech stack](#tech-stack)
+- [Services & Ports](#services--ports)
+- [Demos](#demos)
+- [Quick start (local)](#quick-start-local)
+- [Authentication](#authentication)
+- [Running tests](#running-tests)
+- [CI](#ci)
+- [Microservices documentation](#microservices-documentation)
+- [Architecture decisions](#architecture-decisions)
+- [Encountered problems](#encountered-problems)
+
 ## Project overview
 
 A social network backend built as independent microservices using Spring Boot 3 and Java 21. Services register with Netflix Eureka; all traffic routes through Spring Cloud Gateway with JWT cookie authentication and Redis-backed rate limiting. Users can post, like, follow, and chat in real time — Kafka handles async events between services, STOMP over WebSocket powers live chat and presence tracking. Each service has its own database: PostgreSQL for posts, MySQL for users, MongoDB for chat. Secrets are managed through HashiCorp Vault. Observability stack includes Prometheus with custom metrics, Grafana, and distributed tracing via OpenTelemetry and Jaeger. Covered by unit and integration tests with CI on GitHub Actions.
+
+## Highlights
+
+- **Transactional outbox** for exactly-once-style Kafka publishing from post-service — no events lost on a crash between DB commit and broker send ([ADR 003](./docs/decisions/003-transactional-outbox.md))
+- **Cookie-based JWT auth** with a Redis-backed blacklist for instant invalidation, validated centrally at the gateway before any request reaches a service
+- **Redis token-bucket rate limiting** and a **Resilience4j circuit breaker**, both proven under k6 load tests, not just implemented (see [Demos](#demos))
+- **Full distributed tracing** (OpenTelemetry → Jaeger) and custom **Prometheus/Grafana** dashboards across every service, including JVM and Kafka broker metrics
+- **Real-time chat and notifications** via STOMP over WebSocket and Kafka, routed through a single API Gateway entry point for both HTTP and WebSocket traffic
+- **Database-per-service** (PostgreSQL, MySQL, MongoDB) with secrets centralized in HashiCorp Vault instead of env vars
 
 ## Tech stack
 
@@ -18,6 +54,7 @@ A social network backend built as independent microservices using Spring Boot 3 
 - Apache Kafka
 - Docker
 - JUnit5
+- K6 (performance testing, JavaScript)
 - WebSocket
 - HashiCorp Vault
 - Prometheus
@@ -25,6 +62,8 @@ A social network backend built as independent microservices using Spring Boot 3 
 
 For more information about **database** visit [here](./docs/database.md).
 For more information about **architecture** visit [here](./docs/architecture.md).
+
+This repository covers the backend only. The React frontend lives in [social-network-react](https://github.com/knetsov91/social-network-react).
 
 ## Services & Ports
 
@@ -35,7 +74,7 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | user-service | dynamic | Manages user registration, login, and follow relationships |
 | auth-service | dynamic | Issues and validates JWT tokens; maintains a token blacklist |
 | post-service | dynamic | Handles post creation, retrieval, and likes |
-| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is not yet routed through the gateway (to be fixed) |
+| chat-service | 8089 | Real-time messaging backed by MongoDB; fixed port — WebSocket endpoint is routed through the gateway |
 | notification-service | dynamic | Consumes Kafka events and pushes real-time notifications over WebSocket |
 | PostgreSQL | 5432 | Relational database for post-service |
 | MySQL | 3306 | Relational database for user-service |
@@ -43,10 +82,41 @@ For more information about **architecture** visit [here](./docs/architecture.md)
 | Redis | 6379 | In-memory key-value store |
 | Redis Insight | 8001 | Web UI for inspecting Redis data |
 | Kafka | 9092 | Async event bus |
+| kafka-exporter | 9308 | Kafka broker metrics for Prometheus (observability stack) |
 | Vault | 8200 | Secrets management |
 | Prometheus | 9090 | Metrics collection (observability stack) |
 | Grafana | 3000 | Metrics dashboards (observability stack) |
 | Jaeger | 16686 | Distributed tracing UI (observability stack) |
+
+## Demos
+
+### JVM metrics dashboard
+
+![JVM metrics dashboard in Grafana, tracking heap/non-heap memory, GC activity, thread count, and open file descriptors across microservices](./assets/jvm-metrics-demo.gif)
+
+Self-made Grafana dashboard tracking JVM metrics (heap/non-heap memory, GC activity, thread count, open file descriptors) across microservices, recorded while sending live user registration requests through api-gateway to user-service. Full-quality video: [assets/jvm-metrics-demo.mp4](./assets/jvm-metrics-demo.mp4).
+
+### API Gateway rate limiting
+
+![k6 spike test against the API Gateway's rate limiter, watched live in Grafana](./assets/rate-limiting-demo.gif)
+
+k6 spike test against the API Gateway's Redis-backed token bucket rate limiter (10 req/s sustained, burst of 20), watched live in Grafana. Traffic ramps past that budget, triggering `429` responses until the rate drops back under the limit and the bucket recovers. Full-quality video: [assets/rate-limiting-demo.mp4](./assets/rate-limiting-demo.mp4).
+
+### Jaeger distributed tracing
+
+Traces captured by repeatedly logging in and following another user through the API Gateway.
+
+![Jaeger UI trace search results, filtered to gateway-service / HTTP POST](./assets/jaeger-trace-search.png)
+
+Search results filtered to `Service=gateway-service, Operation=HTTP POST`, showing a list of traces that each span both `gateway-service` and `user-service`.
+
+![Jaeger UI trace detail view showing span nesting from gateway-service into user-service](./assets/jaeger-trace-detail.png)
+
+Opening one of those traces shows the span nesting from the gateway down into user-service, for a single follow request.
+
+![Jaeger UI trace detail for a failed login request, showing the gateway-service span containing a nested user-service span that returns a 500](./assets/jaeger-trace-cross-service-login.png)
+
+A login request traced end to end: the gateway's own Spring Security filter chain, the network hop into user-service, and user-service's independent filter chain, all under one trace ID (2 services, 11 spans). Here `auth-service` wasn't running, so user-service's `secured request` span (247.6ms of the 265.95ms total) shows exactly where the request stalled waiting on the token-issuance call, and the `http post /api/v1/users/login` span reports `outcome=SERVER_ERROR` — the trace pinpoints both the failure and where the time went, not just that something failed.
 
 ## Quick start (local)
 
@@ -84,10 +154,11 @@ MONGO_USERNAME=<MONGO_USERNAME>
 MONGO_PASSWORD=<MONGO_PASSWORD>
 MONGO_AUTH=<MONGO_AUTH>
 
-# Vault (post-service)
+# Vault (post-service, auth-service)
 VAULT_TOKEN=<VAULT_TOKEN>
 
 # JWT — auth-service signs, api-gateway validates; use the same base64-encoded secret for HMAC
+# JWT_SECRET_KEY and JWT_EXP_TIME are stored in Vault and read from there by auth-service, not env vars
 JWT_SECRET_KEY=<JWT_SECRET_KEY>
 JWT_KEY=<JWT_KEY>
 JWT_EXP_TIME=<JWT_EXP_TIME>
@@ -103,7 +174,15 @@ SERVICE_DISCOVERY_HOST=<SERVICE_DISCOVERY_HOST>
 FRONTEND_ORIGIN=<FRONTEND_ORIGIN>
 ```
 
-**3. Start services in order**
+**3. Seed secrets into Vault**
+
+```bash
+./infrastructure/vault/seed.sh
+```
+
+Writes the DB credentials, JWT secret, and Sentry DSN into `secret/post-service` and `secret/auth-service`. Required before starting those two services — both fail to start without their secrets present in Vault.
+
+**4. Start services in order**
 
 > Make sure environment variables are exported before starting services — see **Encountered problems** section.
 
@@ -122,12 +201,14 @@ cd notification-service && ./gradlew bootRun
 cd api-gateway && ./gradlew bootRun
 ```
 
-**4. (Optional) Start observability stack**
+**5. (Optional) Start observability stack**
 
 ```bash
 cd infrastructure/observability
 docker compose up -d   # Prometheus :9090, Grafana :3000
 ```
+
+See [docs/observability.md](./docs/observability.md) for what's actually collected — custom metrics, dashboards, and tracing setup.
 
 ## Authentication
 
@@ -174,28 +255,63 @@ Then run from the service directory:
 
 Integration tests use a dedicated database (`posts_test`) to avoid touching the main database. Each test rolls back its writes via `@Transactional` so tests don't affect each other.
 
+**Performance tests** — K6 scripts in **k6/**, run via the **grafana/k6** Docker image against an already-running stack. In local development services run directly on the host via **./gradlew bootRun** (not in Docker), so the k6 container needs **--network host** to reach them at **localhost**; if the stack is deployed in Docker instead, drop **--network host** and point **BASE_URL** at the containers' network:
+
+```bash
+docker run --rm --network host -v $(pwd)/k6:/scripts grafana/k6 run /scripts/<script>.js
+```
+
+- **rate-limiting.js** — spikes traffic against the API Gateway to trigger the Redis token bucket rate limiter, verifying requests get throttled with **429** once the burst capacity is exceeded and recover once the rate drops.
+- **circuit-breaker.js** — repeatedly calls **GET /api/v1/posts/feed** while user-service is killed and restarted mid-run, verifying the post-service → user-service Resilience4j circuit breaker falls back to an empty feed instead of erroring when user-service is unreachable.
+
 ## CI
 
 Each service has a dedicated GitHub Actions workflow that triggers on push and pull request to `main` and `dev` when files within that service's directory change.
 
-All workflows delegate to a shared reusable workflow (`.github/workflows/_gradle-build.yml`) that runs on `ubuntu-latest` with Java 21 (Temurin) and executes a single step:
+Each workflow has two jobs:
+
+**build** — delegates to `.github/workflows/_gradle-build.yml`, runs on `ubuntu-latest` with Java 21 (Temurin):
 
 ```bash
 ./gradlew test --tests "**.*UTest"
 ```
 
-This compiles the service and runs unit tests. The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+The `*UTest` filter excludes Spring context load tests and integration tests that need a running database or Kafka.
+
+**publish** — runs only on direct push to `main`, after `build` passes. Delegates to `.github/workflows/_docker-publish.yml`, which builds the service's Docker image and pushes it to DockerHub with two tags:
+
+- `<username>/social-network-<service>:latest`
+- `<username>/social-network-<service>:<git-sha>`
+
+Requires `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` repository secrets.
+
+For the full pipeline breakdown see [docs/ci-cd.md](./docs/ci-cd.md). For the git workflow behind it — branch naming, commit format, when `dev` gets PR'd into `main` — see [docs/branching.md](./docs/branching.md).
 
 ## Microservices documentation
 
-- User microservice ([here](./docs/user-service/overview.md))
-- Auth microservice ([here](./docs/auth-service/overview.md))
-- Post microservice ([here](./docs/post-service/overview.md))
-- Chat microservice ([here](./docs/chat-service/overview.md))
-- Notification microservice ([here](./docs/notification-service/overview.md))
-- API Gateway microservice ([here](./docs/api-gateway-service/overview.md))
+- **User microservice** ([overview](./docs/user-service/overview.md))
+  - [API](./docs/user-service/api/api.md)
+  - [Database](./docs/user-service/database/database.md)
+  - [Functional requirements](./docs/user-service/functional_requirements.md)
+- **Auth microservice** ([overview](./docs/auth-service/overview.md))
+  - [API](./docs/auth-service/api/api.md)
+- **Post microservice** ([overview](./docs/post-service/overview.md))
+  - [API](./docs/post-service/api/api.md)
+  - [Database](./docs/post-service/database/database.md)
+- **Chat microservice** ([overview](./docs/chat-service/overview.md))
+- **Notification microservice** ([overview](./docs/notification-service/overview.md))
+- **API Gateway microservice** ([overview](./docs/api-gateway-service/overview.md))
+  - [Routes](./docs/api-gateway-service/routes/routes.md)
+  - [Security](./docs/api-gateway-service/security/security.md)
 
-### Encountered problems
+## Architecture decisions
+
+- [ADR 001 — Cookie-based JWT authentication](./docs/decisions/001-cookie-based-jwt-auth.md) — HttpOnly cookie over an `Authorization` header, so the React SPA never handles the JWT directly
+- [ADR 002 — Idempotent follow via DB unique constraint](./docs/decisions/002-idempotent-follow-via-db-constraint.md) — a DB-level unique constraint instead of an application-level existence check to make duplicate follow requests a no-op
+- [ADR 003 — Transactional outbox in post-service](./docs/decisions/003-transactional-outbox.md) — an outbox table and poller instead of Debezium CDC, so a crash between the DB commit and the Kafka publish can't silently drop a notification
+- [ADR 004 — HashiCorp Vault for secrets management](./docs/decisions/004-vault-secrets-management.md) — post-service and auth-service pull secrets from Vault at startup instead of plain env vars, with no access control or audit trail
+
+## Encountered problems
 
 - **Problem**: **ClassCastException** exception when caching posts.
   **Solution**: disable spring-boot-devtools dependency.
