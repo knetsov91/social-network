@@ -75,24 +75,29 @@ services:
 
   service-discovery:
     build: ../service-discovery
+    mem_limit: 512m
     ports:
       - "8761:8761"
 
   api-gateway:
     build: ../api-gateway
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
       REDIS_HOST: ${REDIS_HOST}
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     ports:
       - "8085:8085"
     depends_on:
       - service-discovery
+      - vault
       - redis
 
   auth-service:
     build: ../auth-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -106,6 +111,7 @@ services:
 
   post-service:
     build: ../post-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
@@ -122,39 +128,48 @@ services:
 
   user-service:
     build: ../user-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
       REDIS_HOST: ${REDIS_HOST}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
+      - vault
       - redis
       - user-service-db
 
   chat-service:
     build: ../chat-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
       MONGODB_HOST: ${MONGODB_HOST}
       MONGODB_PORT: ${MONGODB_PORT}
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
+      - vault
       - chat-service-db
 
   notification-service:
     build: ../notification-service
+    mem_limit: 512m
     env_file: compose.env
     environment:
       SERVICE_DISCOVERY_HOST: ${SERVICE_DISCOVERY_HOST}
+      VAULT_HOST: ${VAULT_HOST}
       REDIS_HOST: ${REDIS_HOST}
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://jaeger:4318/v1/traces
     depends_on:
       - service-discovery
+      - vault
       - redis
 
 volumes:

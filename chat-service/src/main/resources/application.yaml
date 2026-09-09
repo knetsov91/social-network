@@ -1,14 +1,26 @@
 spring:
   application:
     name: chat-service
+
+  config:
+    import: "vault://"
+
   data:
     mongodb:
       host: ${MONGODB_HOST}
       database: chats
       port: ${MONGODB_PORT:27017}
-      username: ${MONGO_USERNAME}
-      password: ${MONGO_PASSWORD}
       authentication-database: ${MONGO_AUTH}
+
+  cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 
 server:
   port: 8089
@@ -44,7 +56,6 @@ management:
       endpoint: http://localhost:4318/v1/traces
 
 sentry:
-  dsn: ${SENTRY_DSN}
   send-default-pii: true
   logs:
     enabled: true

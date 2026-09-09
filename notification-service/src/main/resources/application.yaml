@@ -2,10 +2,23 @@ spring:
   application:
     name: notification-service
 
+  config:
+    import: "vault://"
+
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+
+  cloud:
+    vault:
+      uri: http://${VAULT_HOST:127.0.0.1}:8200
+      token: ${VAULT_TOKEN}
+      scheme: http
+      kv:
+        enabled: true
+        kv-version: 2
+      fail-fast: true
 
 frontend:
   url: ${FRONTEND_ORIGIN:http://localhost:5173}
@@ -36,7 +49,6 @@ management:
       show-details: always
 
 sentry:
-  dsn: ${SENTRY_DSN}
   send-default-pii: true
   logs:
     enabled: true
