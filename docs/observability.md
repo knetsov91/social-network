@@ -24,4 +24,4 @@ All services export traces via OpenTelemetry Protocol (OTLP) to Jaeger. Every re
 - `opentelemetry-exporter-otlp` — sends spans over HTTP to Jaeger's OTLP collector (`:4318`)
 - Sampling rate: `1.0` (100% of requests are traced)
 
-**Instrumented services:** `gateway-service`, `auth-service`, `user-service`
+**Instrumented services:** `gateway-service`, `auth-service`, `user-service`, `post-service`, `chat-service`, `notification-service`. `service-discovery` has no tracing — it has no custom code to instrument.
