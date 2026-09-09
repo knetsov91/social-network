@@ -82,6 +82,7 @@ This repository covers the backend only. The React frontend lives in [social-net
 | Redis | 6379 | In-memory key-value store |
 | Redis Insight | 8001 | Web UI for inspecting Redis data |
 | Kafka | 9092 | Async event bus |
+| kafka-exporter | 9308 | Kafka broker metrics for Prometheus (observability stack) |
 | Vault | 8200 | Secrets management |
 | Prometheus | 9090 | Metrics collection (observability stack) |
 | Grafana | 3000 | Metrics dashboards (observability stack) |

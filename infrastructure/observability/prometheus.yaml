@@ -3,7 +3,7 @@ scrape_configs:
     metrics_path: '/metrics'
     scrape_interval: 15s
     static_configs:
-      - targets: ["localhost:9308"]
+      - targets: ["kafka-exporter:9308"]
         labels:
           application: "kafka"
 

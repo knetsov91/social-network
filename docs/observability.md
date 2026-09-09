@@ -4,6 +4,8 @@
 
 Prometheus scrapes each service's `/actuator/prometheus` endpoint every 5 seconds. Grafana at `:3000` visualises the collected metrics.
 
+Kafka broker metrics (consumer lag, partition counts, throughput) are exposed separately via `kafka-exporter`, scraped by Prometheus at `kafka-exporter:9308`.
+
 Start the observability stack:
 
 ```bash
