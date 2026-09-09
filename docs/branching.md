@@ -25,7 +25,7 @@ main    — stable, production-ready
 dev     — integration branch, always in a working state
 ```
 
-All work is committed directly to `dev`, then `dev` is PR'd into `main` when changes are complete.
+Each change gets its own short-lived topic branch off `dev`, named for what it does rather than which service it touches (`fix/kafka-persistence`, `feat/docker-compose-services`, `docs/fix-branching-strategy`). It's PR'd back into `dev` and deleted once merged. `dev` is PR'd into `main` when changes are complete.
 
 ## Commit message format
 
